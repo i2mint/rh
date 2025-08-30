@@ -8,6 +8,7 @@ computational meshes with interactive web interfaces.
 from dataclasses import dataclass, field
 from typing import Dict, Any, Optional
 from pathlib import Path
+import os
 
 
 @dataclass
@@ -23,11 +24,32 @@ class MeshBuilder:
     initial_values: Dict[str, Any] = field(default_factory=dict)
     field_overrides: Dict[str, Any] = field(default_factory=dict)
     ui_config: Dict[str, Any] = field(default_factory=dict)
-    output_dir: str = "./mesh_app"
+    output_dir: Optional[str] = None
 
     def __post_init__(self):
         """Initialize the mesh after construction."""
         self.mesh = self._parse_mesh(self.mesh_spec)
+
+    def _get_output_dir(self, app_name: Optional[str] = None) -> str:
+        """Get the output directory for the app.
+
+        Args:
+            app_name: Optional name for the app. If provided and no output_dir
+                     is set, will use RH_APP_FOLDER/app_name
+
+        Returns:
+            Path to the output directory
+        """
+        if self.output_dir:
+            return self.output_dir
+        else:
+            # Import here to allow dynamic updates during testing
+            from .util import RH_APP_FOLDER
+
+            if app_name:
+                return os.path.join(RH_APP_FOLDER, app_name)
+            else:
+                return os.path.join(RH_APP_FOLDER, "default_app")
 
     def _parse_mesh(self, mesh_spec: Dict[str, Any]) -> Dict[str, Any]:
         """Parse mesh specification from various formats.
@@ -220,7 +242,12 @@ class MeshBuilder:
         }
 
     def build_app(
-        self, *, title: str = "Mesh App", serve: bool = False, port: int = 8080
+        self,
+        *,
+        title: str = "Mesh App",
+        serve: bool = False,
+        port: int = 8080,
+        app_name: Optional[str] = None,
     ) -> Path:
         """Generate complete HTML app with all assets bundled.
 
@@ -228,6 +255,7 @@ class MeshBuilder:
             title: Title for the HTML page
             serve: Whether to start a development server
             port: Port for development server
+            app_name: Name for the app (used for directory if output_dir not set)
 
         Returns:
             Path to the generated HTML file
@@ -236,7 +264,12 @@ class MeshBuilder:
 
         config = self.generate_config()
 
-        output_path = Path(self.output_dir)
+        # Infer app_name from title if not provided
+        if app_name is None:
+            app_name = title.lower().replace(" ", "_")
+
+        output_dir = self._get_output_dir(app_name)
+        output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
 
         html_generator = HTMLGenerator()
@@ -246,16 +279,20 @@ class MeshBuilder:
         app_file.write_text(html_content)
 
         if serve:
-            self.serve(port=port)
+            self.serve(output_dir, port=port)
 
         return app_file
 
-    def serve(self, port: int = 8080):
+    def serve(self, directory: Optional[str] = None, port: int = 8080):
         """Serve the app locally for development.
 
         Args:
+            directory: Directory to serve (if not provided, uses output_dir logic)
             port: Port to serve on
         """
         from .util import serve_directory
 
-        serve_directory(self.output_dir, port=port)
+        if directory is None:
+            directory = self._get_output_dir()
+
+        serve_directory(directory, port=port)

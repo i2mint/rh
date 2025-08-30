@@ -154,7 +154,9 @@ def test_mesh_builder_dataclass_defaults():
     assert builder.initial_values == {}
     assert builder.field_overrides == {}
     assert builder.ui_config == {}
-    assert builder.output_dir == "./mesh_app"
+    assert (
+        builder.output_dir is None
+    )  # Now defaults to None, uses RH_APP_FOLDER when needed
 
 
 if __name__ == "__main__":

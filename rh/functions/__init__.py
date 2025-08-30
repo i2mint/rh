@@ -1,1 +1,3 @@
-# Functions module for JavaScript function resolution
+"""
+Functions module for JavaScript function resolution
+"""

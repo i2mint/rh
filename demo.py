@@ -44,22 +44,24 @@ def demo_temperature_converter():
     print(f"   Variables: {list(config['schema']['properties'].keys())}")
 
     # Build the app
-    with tempfile.TemporaryDirectory() as tmpdir:
-        builder.output_dir = tmpdir  # Set output directory
-        app_path = builder.build_app(title="Temperature Converter")
+    tmpdir = tempfile.mkdtemp(
+        prefix="rh_temp_demo_"
+    )  # Create persistent temp directory
+    builder.output_dir = tmpdir  # Set output directory
+    app_path = builder.build_app(title="Temperature Converter")
 
-        print(f"📱 App created at: {app_path}")
-        print(f"📄 HTML size: {app_path.stat().st_size} bytes")
+    print(f"📱 App created at: {app_path}")
+    print(f"📄 HTML size: {app_path.stat().st_size} bytes")
 
-        # Show a snippet of the generated HTML
-        html_content = app_path.read_text()
-        print("🔍 HTML Preview:")
-        lines = html_content.split('\n')
-        for i, line in enumerate(lines[:10]):
-            print(f"   {i+1:2d}: {line}")
-        print("   ...")
+    # Show a snippet of the generated HTML
+    html_content = app_path.read_text()
+    print("🔍 HTML Preview:")
+    lines = html_content.split('\n')
+    for i, line in enumerate(lines[:10]):
+        print(f"   {i+1:2d}: {line}")
+    print("   ...")
 
-        return app_path
+    return app_path
 
 
 def demo_physics_calculator():
@@ -139,12 +141,14 @@ def demo_physics_calculator():
         if ui_config:
             print(f"   {var}: {ui_config}")
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        builder.output_dir = tmpdir  # Set output directory
-        app_path = builder.build_app(title="Physics Calculator")
-        print(f"📱 Physics app created at: {app_path}")
+    tmpdir = tempfile.mkdtemp(
+        prefix="rh_physics_demo_"
+    )  # Create persistent temp directory
+    builder.output_dir = tmpdir  # Set output directory
+    app_path = builder.build_app(title="Physics Calculator")
+    print(f"📱 Physics app created at: {app_path}")
 
-        return app_path
+    return app_path
 
 
 def demo_bidirectional_conversion():
@@ -193,12 +197,14 @@ def demo_bidirectional_conversion():
     print(f"   USD triggers: {reverse_mesh.get('amount_usd', [])}")
     print(f"   EUR triggers: {reverse_mesh.get('amount_eur', [])}")
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        builder.output_dir = tmpdir  # Set output directory
-        app_path = builder.build_app(title="Currency Converter")
-        print(f"💱 Currency converter created at: {app_path}")
+    tmpdir = tempfile.mkdtemp(
+        prefix="rh_currency_demo_"
+    )  # Create persistent temp directory
+    builder.output_dir = tmpdir  # Set output directory
+    app_path = builder.build_app(title="Currency Converter")
+    print(f"💱 Currency converter created at: {app_path}")
 
-        return app_path
+    return app_path
 
 
 def main():
@@ -222,6 +228,13 @@ def main():
         print("   - Open any HTML file in a browser to see the interactive app")
         print("   - Modify input values to see real-time propagation")
         print("   - Use builder.serve() to start a development server")
+
+        print("\n🗑️  Cleanup:")
+        print("   - These temp directories will persist until you delete them")
+        print(
+            f"   - To clean up, run: rm -rf {temp_app.parent} {physics_app.parent} {currency_app.parent}"
+        )
+        print("   - Or let your system's temp cleanup handle them automatically")
 
     except Exception as e:
         print(f"❌ Demo failed: {e}")

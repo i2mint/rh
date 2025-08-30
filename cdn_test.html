@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDN Loading Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 5px 0; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>Testing Different CDN Options</h1>
+    <div id="results"></div>
+
+    <!-- Test 1: Current approach -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Try the standalone bundle approach -->
+    <script src="https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js"></script>
+
+    <script>
+        function addResult(message, type) {
+            const div = document.createElement('div');
+            div.className = 'status ' + type;
+            div.textContent = message;
+            document.getElementById('results').appendChild(div);
+        }
+
+        setTimeout(() => {
+            // Test React
+            if (typeof React !== 'undefined') {
+                addResult('✅ React loaded: ' + React.version, 'success');
+            } else {
+                addResult('❌ React failed to load', 'error');
+            }
+
+            // Test ReactDOM
+            if (typeof ReactDOM !== 'undefined') {
+                addResult('✅ ReactDOM loaded', 'success');
+            } else {
+                addResult('❌ ReactDOM failed to load', 'error');
+            }
+
+            // Check all available globals
+            const allGlobals = Object.keys(window).filter(k => 
+                k.toLowerCase().includes('react') || 
+                k.toLowerCase().includes('form') || 
+                k.toLowerCase().includes('json') ||
+                k.toLowerCase().includes('rjsf')
+            );
+            addResult('Available globals: ' + allGlobals.join(', '), 'warning');
+
+            // Test various form-related globals
+            if (typeof JSONSchemaForm !== 'undefined') {
+                addResult('✅ JSONSchemaForm found: ' + typeof JSONSchemaForm, 'success');
+            } else {
+                addResult('❌ JSONSchemaForm not found', 'error');
+            }
+
+            if (typeof Form !== 'undefined') {
+                addResult('✅ Form found: ' + typeof Form, 'success');
+            } else {
+                addResult('❌ Form not found', 'error');
+            }
+
+            // Try to render a simple form if we found anything
+            try {
+                if (typeof JSONSchemaForm !== 'undefined') {
+                    const schema = { type: "object", properties: { name: { type: "string" } } };
+                    const element = React.createElement(JSONSchemaForm, { schema });
+                    addResult('✅ Successfully created form element', 'success');
+                } else {
+                    addResult('❌ Cannot test form creation - no form component found', 'error');
+                }
+            } catch (error) {
+                addResult('❌ Error creating form: ' + error.message, 'error');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

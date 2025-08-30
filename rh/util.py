@@ -4,9 +4,29 @@ Utility functions for the RH framework.
 
 import http.server
 import socketserver
-import threading
-import time
+import os
 from pathlib import Path
+
+from config2py import get_app_data_folder, process_path
+
+RH_LOCAL_DATA_FOLDER = os.environ.get('RH_LOCAL_DATA_FOLDER', get_app_data_folder('rh'))
+RH_LOCAL_DATA_FOLDER = process_path(RH_LOCAL_DATA_FOLDER, ensure_dir_exists=True)
+RH_APP_FOLDER = os.environ.get(
+    'RH_APP_FOLDER', os.path.join(RH_LOCAL_DATA_FOLDER, 'apps')
+)
+RH_APP_FOLDER = process_path(RH_APP_FOLDER, ensure_dir_exists=True)
+
+
+def get_app_directory(app_name: str) -> str:
+    """Get a directory path for a named app within RH_APP_FOLDER.
+
+    Args:
+        app_name: Name of the app
+
+    Returns:
+        Full path to the app directory
+    """
+    return os.path.join(RH_APP_FOLDER, app_name)
 
 
 def serve_directory(directory: str, port: int = 8080, host: str = "localhost"):
@@ -19,6 +39,9 @@ def serve_directory(directory: str, port: int = 8080, host: str = "localhost"):
     """
     import os
     import webbrowser
+
+    # Ensure the directory exists before trying to serve it
+    directory = process_path(directory, ensure_dir_exists=True)
 
     # Change to the directory to serve
     original_dir = os.getcwd()

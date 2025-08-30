@@ -1,1 +1,3 @@
-# Empty module init
+"""
+Empty module init
+"""

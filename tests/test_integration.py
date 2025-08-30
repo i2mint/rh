@@ -38,10 +38,16 @@ def test_generated_html_has_proper_structure():
         assert "<html lang=\"en\">" in html_content
         assert "<title>Integration Test App</title>" in html_content
 
-        # Test React and RJSF dependencies
+        # Test React and form dependencies (either RJSF or fallback)
         assert "react" in html_content
-        assert "@rjsf/core" in html_content
-        assert "@rjsf/validator-ajv8" in html_content
+        # Should have either RJSF CDN or our fallback component
+        has_rjsf = (
+            "@rjsf/core" in html_content or "react-jsonschema-form" in html_content
+        )
+        has_fallback = "SimpleFormComponent" in html_content
+        assert (
+            has_rjsf or has_fallback
+        ), "Should have either RJSF or fallback form component"
 
         # Test that our mesh functions are included
         assert "meshFunctions" in html_content

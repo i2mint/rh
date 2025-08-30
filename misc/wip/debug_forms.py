@@ -78,7 +78,7 @@ def create_debug_version():
     """
 
     # Insert debug script before </body>
-    debug_html = html_content.replace('</body>', debug_js + '\n</body>')
+    debug_html = html_content.replace("</body>", debug_js + "\n</body>")
 
     # Write debug version
     debug_path = app_path.parent / "debug_index.html"

@@ -139,7 +139,7 @@ class MeshBuilder:
                     {
                         k: v
                         for k, v in self.field_overrides[var_name].items()
-                        if k.startswith('ui:')
+                        if k.startswith("ui:")
                     }
                 )
 
@@ -202,7 +202,7 @@ class MeshBuilder:
         js_functions = []
         for name, code in self.functions_spec.items():
             # For inline functions, wrap in function syntax
-            if isinstance(code, str) and not code.strip().startswith('function'):
+            if isinstance(code, str) and not code.strip().startswith("function"):
                 args = self.mesh.get(name, [])
                 func_code = f"function({', '.join(args)}) {{ {code} }}"
             else:

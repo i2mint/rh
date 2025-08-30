@@ -98,14 +98,14 @@ def debug_temperature_converter():
         if head_start != -1:
             head_section = html_content[head_start:head_end]
             print("\n  📋 HEAD Section (CDN links):")
-            lines = head_section.split('\n')
+            lines = head_section.split("\n")
             for line in lines:
-                if 'src=' in line or 'href=' in line:
+                if "src=" in line or "href=" in line:
                     print(f"    {line.strip()}")
 
         # Extract script sections
         print("\n  📋 JavaScript Sections:")
-        script_count = html_content.count('<script>')
+        script_count = html_content.count("<script>")
         print(f"    Found {script_count} script tags")
 
         # Show the first few lines of the form initialization

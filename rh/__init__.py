@@ -8,4 +8,4 @@ interactive web interfaces with real-time updates.
 
 from .core import MeshBuilder
 
-__all__ = ['MeshBuilder']
+__all__ = ["MeshBuilder"]

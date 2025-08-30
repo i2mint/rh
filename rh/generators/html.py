@@ -46,7 +46,7 @@ class HTMLGenerator:
         app_initialization: str,
     ) -> str:
         """Generate the base HTML template with all components."""
-        return f'''<!DOCTYPE html>
+        return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -176,11 +176,11 @@ class HTMLGenerator:
         {app_initialization}
     </script>
 </body>
-</html>'''
+</html>"""
 
     def _generate_mesh_propagator_js(self, mesh_config_js: str) -> str:
         """Generate the mesh propagator JavaScript class."""
-        return f'''class MeshPropagator {{
+        return f"""class MeshPropagator {{
     constructor(mesh, functions, reverseMesh) {{
         this.mesh = mesh;
         this.functions = functions;
@@ -250,7 +250,7 @@ const meshPropagator = new MeshPropagator(
     meshConfig.mesh,
     meshFunctions,
     meshConfig.reverseMesh
-);'''
+);"""
 
     def _generate_app_initialization(self, config: Dict[str, Any]) -> str:
         """Generate the main app initialization JavaScript."""
@@ -260,7 +260,7 @@ const meshPropagator = new MeshPropagator(
             "formData": config["initial_values"],
         }
 
-        return f'''// Initialize form with fallback support
+        return f"""// Initialize form with fallback support
 console.log("Starting app initialization...");
 
 // Check if all dependencies are loaded
@@ -407,4 +407,4 @@ try {{
     console.error("Error in app initialization:", error);
     document.getElementById('rjsf-form').innerHTML = 
         '<div class="alert alert-danger">App initialization failed: ' + error.message + '</div>';
-}}'''
+}}"""

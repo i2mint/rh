@@ -35,7 +35,7 @@ def test_generated_html_has_proper_structure():
 
         # Test HTML structure
         assert "<!DOCTYPE html>" in html_content
-        assert "<html lang=\"en\">" in html_content
+        assert '<html lang="en">' in html_content
         assert "<title>Integration Test App</title>" in html_content
 
         # Test React and form dependencies (either RJSF or fallback)
@@ -90,7 +90,7 @@ def test_generated_javascript_is_valid():
 
         # Extract the mesh config from JavaScript
         config_match = re.search(
-            r'const meshConfig = ({.*?});', html_content, re.DOTALL
+            r"const meshConfig = ({.*?});", html_content, re.DOTALL
         )
         assert config_match, "meshConfig not found in generated HTML"
 
@@ -135,7 +135,7 @@ def test_multiple_ui_conventions_in_html():
         # The UI schema should be embedded in the form configuration
         # Look for the formConfig that contains the UI schema
         config_match = re.search(
-            r'const formConfig = ({.*?});', html_content, re.DOTALL
+            r"const formConfig = ({.*?});", html_content, re.DOTALL
         )
         assert config_match, "formConfig not found in generated HTML"
 
@@ -189,7 +189,7 @@ def test_field_overrides_in_generated_html():
 
         # Extract form configuration
         config_match = re.search(
-            r'const formConfig = ({.*?});', html_content, re.DOTALL
+            r"const formConfig = ({.*?});", html_content, re.DOTALL
         )
         assert config_match
 

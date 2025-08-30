@@ -9,10 +9,10 @@ from pathlib import Path
 
 from config2py import get_app_data_folder, process_path
 
-RH_LOCAL_DATA_FOLDER = os.environ.get('RH_LOCAL_DATA_FOLDER', get_app_data_folder('rh'))
+RH_LOCAL_DATA_FOLDER = os.environ.get("RH_LOCAL_DATA_FOLDER", get_app_data_folder("rh"))
 RH_LOCAL_DATA_FOLDER = process_path(RH_LOCAL_DATA_FOLDER, ensure_dir_exists=True)
 RH_APP_FOLDER = os.environ.get(
-    'RH_APP_FOLDER', os.path.join(RH_LOCAL_DATA_FOLDER, 'apps')
+    "RH_APP_FOLDER", os.path.join(RH_LOCAL_DATA_FOLDER, "apps")
 )
 RH_APP_FOLDER = process_path(RH_APP_FOLDER, ensure_dir_exists=True)
 
@@ -88,7 +88,7 @@ def _find_free_port(start_port: int = 8080) -> int:
     for port in range(start_port, start_port + 100):
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.bind(('localhost', port))
+                s.bind(("localhost", port))
                 return port
         except OSError:
             continue
@@ -121,10 +121,10 @@ class PluginRegistry:
     def _auto_register(self):
         """Detect and register third-party tools automatically."""
         # Try to register enhanced tools if available
-        if self._has_package('jinja2'):
+        if self._has_package("jinja2"):
             # Would register Jinja2Handler if implemented
             pass
-        if self._has_package('esbuild'):
+        if self._has_package("esbuild"):
             # Would register ESBuildHandler if implemented
             pass
 

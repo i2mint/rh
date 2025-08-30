@@ -56,7 +56,7 @@ def demo_temperature_converter():
     # Show a snippet of the generated HTML
     html_content = app_path.read_text()
     print("🔍 HTML Preview:")
-    lines = html_content.split('\n')
+    lines = html_content.split("\n")
     for i, line in enumerate(lines[:10]):
         print(f"   {i+1:2d}: {line}")
     print("   ...")

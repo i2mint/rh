@@ -57,8 +57,12 @@ def test_runtime_form_renders_without_react_errors():
             joined = "\n".join(console_msgs)
 
             # Fail if we see known React minified errors or other render failures
-            assert "Minified React error" not in joined, f"React minified error seen in console:\n{joined}"
-            assert "Error rendering form" not in joined, f"Form render error seen in console:\n{joined}"
+            assert (
+                "Minified React error" not in joined
+            ), f"React minified error seen in console:\n{joined}"
+            assert (
+                "Error rendering form" not in joined
+            ), f"Form render error seen in console:\n{joined}"
 
             # Check that some DOM container for the form exists
             form_node = (
@@ -67,7 +71,9 @@ def test_runtime_form_renders_without_react_errors():
                 or page.query_selector("form")
             )
 
-            assert form_node is not None, f"No form container found in DOM; console:\n{joined}"
+            assert (
+                form_node is not None
+            ), f"No form container found in DOM; console:\n{joined}"
 
             browser.close()
 

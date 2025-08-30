@@ -248,6 +248,7 @@ class MeshBuilder:
         serve: bool = False,
         port: int = 8080,
         app_name: Optional[str] = None,
+        embed_rjsf: bool = False,
     ) -> Path:
         """Generate complete HTML app with all assets bundled.
 
@@ -273,7 +274,7 @@ class MeshBuilder:
         output_path.mkdir(parents=True, exist_ok=True)
 
         html_generator = HTMLGenerator()
-        html_content = html_generator.generate_app(config, title)
+        html_content = html_generator.generate_app(config, title, embed_rjsf=embed_rjsf)
 
         app_file = output_path / "index.html"
         app_file.write_text(html_content)

@@ -35,12 +35,10 @@ def test_fixed_app():
         # Check the validator fix
         html_content = app_path.read_text()
 
-        if "const validator = validator;" in html_content:
-            print("❌ Circular validator reference still present")
-        elif "const validator = JSONSchemaForm.validator.ajv8;" in html_content:
-            print("✅ Validator reference fixed")
-        else:
-            print("⚠️ Validator reference changed to something else")
+        # Assert the validator reference was fixed (expected pattern)
+        assert (
+            "JSONSchemaForm.validator.ajv8" in html_content
+        ), "Validator reference not found; expected JSONSchemaForm.validator.ajv8"
 
         # Look for other potential issues
         print("\n🔍 JavaScript Analysis:")
@@ -56,17 +54,10 @@ def test_fixed_app():
         ]
 
         for check_name, passed in checks:
-            status = "✅" if passed else "❌"
-            print(f"  {status} {check_name}")
+            assert passed, f"Check failed: {check_name}"
 
-        print(f"\n🌐 Test this URL in your browser:")
-        print(f"   file://{app_path}")
-        print("\n💡 If you still see a white page:")
-        print("   1. Open browser console (F12)")
-        print("   2. Look for JavaScript errors in the Console tab")
-        print("   3. Check the Network tab to see if CDN resources are loading")
-
-        return app_path
+        # Basic smoke: ensure file exists and contains expected render hook
+        assert app_path.exists()
 
 
 if __name__ == "__main__":

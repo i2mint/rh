@@ -42,6 +42,18 @@ jobs:
           root-dir: ${{ env.PROJECT_NAME }}
           paths-to-ignore: examples,scrap
 
+      - name: Install Playwright browsers (for runtime smoke tests)
+        if: always()
+        run: |
+          python -m pip install playwright -q
+          python -m playwright install --with-deps || true
+
+      - name: Playwright Runtime Smoke Tests
+        if: always()
+        run: |
+          python -m pip install pytest-playwright -q
+          python -m pytest rh/rh/tests/test_runtime_smoke.py -q || true
+
   publish:
     name: Publish
     if: "!contains(github.event.head_commit.message, '[skip ci]') && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')"

@@ -239,7 +239,12 @@ def main():
     print("=" * 50)
 
     parser = argparse.ArgumentParser(description='Generate RH demo apps')
-    parser.add_argument('--outdir', '-o', help='Write demo apps to this directory (creates subfolders), otherwise uses temp dirs', default=None)
+    parser.add_argument(
+        '--outdir',
+        '-o',
+        help='Write demo apps to this directory (creates subfolders), otherwise uses temp dirs',
+        default=None,
+    )
     args = parser.parse_args()
 
     try:

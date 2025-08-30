@@ -36,12 +36,6 @@ jobs:
           enable: missing-module-docstring
           ignore: tests,examples,scrap
 
-      - name: Pytest Validation
-        uses: i2mint/isee/actions/pytest-validation@master
-        with:
-          root-dir: ${{ env.PROJECT_NAME }}
-          paths-to-ignore: examples,scrap
-
       - name: Install Playwright browsers (for runtime smoke tests)
         if: always()
         run: |
@@ -53,6 +47,12 @@ jobs:
         run: |
           python -m pip install pytest-playwright -q
           python -m pytest rh/rh/tests/test_runtime_smoke.py -q || true
+
+      - name: Pytest Validation
+        uses: i2mint/isee/actions/pytest-validation@master
+        with:
+          root-dir: ${{ env.PROJECT_NAME }}
+          paths-to-ignore: examples,scrap
 
   publish:
     name: Publish

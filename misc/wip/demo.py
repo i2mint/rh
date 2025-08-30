@@ -8,6 +8,8 @@ the core capabilities of the framework.
 from rh import MeshBuilder
 import tempfile
 from pathlib import Path
+import argparse
+import shutil
 
 
 def demo_temperature_converter():
@@ -236,6 +238,10 @@ def main():
     print("🚀 RH Framework Demo - Reactive Html Builder")
     print("=" * 50)
 
+    parser = argparse.ArgumentParser(description='Generate RH demo apps')
+    parser.add_argument('--outdir', '-o', help='Write demo apps to this directory (creates subfolders), otherwise uses temp dirs', default=None)
+    args = parser.parse_args()
+
     try:
         # Run all demos
         temp_app = demo_temperature_converter()
@@ -243,10 +249,27 @@ def main():
         currency_app = demo_bidirectional_conversion()
 
         print("\n🎉 All demos completed successfully!")
-        print("\nGenerated apps:")
-        print(f"   🌡️  Temperature: {temp_app}")
-        print(f"   ⚡ Physics: {physics_app}")
-        print(f"   💱 Currency: {currency_app}")
+        apps = [temp_app, physics_app, currency_app]
+
+        if args.outdir:
+            outdir = Path(args.outdir)
+            outdir.mkdir(parents=True, exist_ok=True)
+            saved = []
+            for app in apps:
+                dest = outdir / app.name
+                if dest.exists():
+                    shutil.rmtree(dest)
+                shutil.copytree(app.parent, dest)
+                saved.append(dest / 'index.html')
+            print(f"\nSaved demo apps to: {outdir}")
+            print("\nGenerated apps:")
+            for p in saved:
+                print(f"   - {p}")
+        else:
+            print("\nGenerated apps:")
+            print(f"   🌡️  Temperature: {temp_app}")
+            print(f"   ⚡ Physics: {physics_app}")
+            print(f"   💱 Currency: {currency_app}")
 
         print("\n💡 Next steps:")
         print("   - Open any HTML file in a browser to see the interactive app")

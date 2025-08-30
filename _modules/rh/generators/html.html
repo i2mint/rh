@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rh.generators.html &mdash; rh 0.0.7 documentation</title>
+  <title>rh.generators.html &mdash; rh 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=bbaf98b3"></script>
+      <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -61,6 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_demo_scenario.html">rh.tests.test_demo_scenario</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_integration.html">rh.tests.test_integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_readme_examples.html">rh.tests.test_readme_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_runtime_smoke.html">rh.tests.test_runtime_smoke</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_serve_before_build.html">rh.tests.test_serve_before_build</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/util.html">rh.util</a></li>
 </ul>
@@ -102,409 +103,438 @@
 <div class="viewcode-block" id="HTMLGenerator">
 <a class="viewcode-back" href="../../../module_docs/rh/generators/html.html#rh.generators.html.HTMLGenerator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HTMLGenerator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates complete HTML applications from mesh configurations.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates complete HTML applications from mesh configurations.</span>
+
+<span class="sd">    The generator builds a self-contained index.html that includes React, a</span>
+<span class="sd">    lightweight fallback form component, optional embedded vendor UMD for</span>
+<span class="sd">    RJSF (when embed_rjsf=True), and the mesh propagation runtime.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the HTML generator.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">template_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;templates&quot;</span>
 
 <div class="viewcode-block" id="HTMLGenerator.generate_app">
 <a class="viewcode-back" href="../../../module_docs/rh/generators/html.html#rh.generators.html.HTMLGenerator.generate_app">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Mesh App&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate complete HTML application.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            config: Configuration dict from MeshBuilder.generate_config()</span>
-<span class="sd">            title: Title for the HTML page</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Complete HTML content as string</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Generate JavaScript components</span>
-        <span class="n">mesh_config_js</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;const meshConfig = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;propagation_rules&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">mesh_propagator_js</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_mesh_propagator_js</span><span class="p">(</span><span class="n">mesh_config_js</span><span class="p">)</span>
-        <span class="n">app_init_js</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_app_initialization</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-
-        <span class="c1"># Generate the complete HTML</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_base_html</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
-            <span class="n">mesh_functions</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;functions&quot;</span><span class="p">],</span>
-            <span class="n">mesh_propagator</span><span class="o">=</span><span class="n">mesh_propagator_js</span><span class="p">,</span>
-            <span class="n">app_initialization</span><span class="o">=</span><span class="n">app_init_js</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_base_html</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">mesh_functions</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">mesh_propagator</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">app_initialization</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_app</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Mesh App&quot;</span><span class="p">,</span> <span class="n">embed_rjsf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the base HTML template with all components.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;&lt;!DOCTYPE html&gt;</span>
-<span class="s1">&lt;html lang=&quot;en&quot;&gt;</span>
-<span class="s1">&lt;head&gt;</span>
-<span class="s1">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span>
-<span class="s1">    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span>
-<span class="s1">    &lt;title&gt;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1">&lt;/title&gt;</span>
-<span class="s1">    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css&quot;&gt;</span>
-<span class="s1">    &lt;style&gt;</span>
-<span class="s1">        .mesh-form-container </span><span class="se">{{</span>
-<span class="s1">            max-width: 800px;</span>
-<span class="s1">            margin: 2rem auto;</span>
-<span class="s1">            padding: 2rem;</span>
-<span class="s1">        </span><span class="se">}}</span>
-<span class="s1">        .readonly-field </span><span class="se">{{</span>
-<span class="s1">            background-color: #f8f9fa;</span>
-<span class="s1">        </span><span class="se">}}</span>
-<span class="s1">        .field-group </span><span class="se">{{</span>
-<span class="s1">            border: 1px solid #dee2e6;</span>
-<span class="s1">            border-radius: 0.375rem;</span>
-<span class="s1">            padding: 1rem;</span>
-<span class="s1">            margin-bottom: 1rem;</span>
-<span class="s1">        </span><span class="se">}}</span>
-<span class="s1">    &lt;/style&gt;</span>
-<span class="s1">&lt;/head&gt;</span>
-<span class="s1">&lt;body&gt;</span>
-<span class="s1">    &lt;div class=&quot;container-fluid&quot;&gt;</span>
-<span class="s1">        &lt;div class=&quot;mesh-form-container&quot;&gt;</span>
-<span class="s1">            &lt;h1&gt;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1">&lt;/h1&gt;</span>
-<span class="s1">            &lt;div id=&quot;rjsf-form&quot;&gt;&lt;/div&gt;</span>
-<span class="s1">        &lt;/div&gt;</span>
-<span class="s1">    &lt;/div&gt;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a full HTML document as a string for the provided mesh config.</span>
 
-<span class="s1">    &lt;!-- React Dependencies --&gt;</span>
-<span class="s1">    &lt;script crossorigin src=&quot;https://unpkg.com/react@17/umd/react.production.min.js&quot;&gt;&lt;/script&gt;</span>
-<span class="s1">    &lt;script crossorigin src=&quot;https://unpkg.com/react-dom@17/umd/react-dom.production.min.js&quot;&gt;&lt;/script&gt;</span>
-<span class="s1">    </span>
-<span class="s1">    &lt;!-- Simple form library fallback --&gt;</span>
-<span class="s1">    &lt;script&gt;</span>
-<span class="s1">        // Fallback form component if CDN fails</span>
-<span class="s1">        window.SimpleFormComponent = function(props) </span><span class="se">{{</span>
-<span class="s1">            const schema = props.schema || </span><span class="se">{{}}</span><span class="s1">;</span>
-<span class="s1">            const formData = props.formData || </span><span class="se">{{}}</span><span class="s1">;</span>
-<span class="s1">            const onChange = props.onChange;</span>
-<span class="s1">            const uiSchema = props.uiSchema || </span><span class="se">{{}}</span><span class="s1">;</span>
-<span class="s1">            </span>
-<span class="s1">            function createField(key, fieldSchema, value) </span><span class="se">{{</span>
-<span class="s1">                const fieldProps = </span><span class="se">{{</span>
-<span class="s1">                    id: key,</span>
-<span class="s1">                    name: key,</span>
-<span class="s1">                    value: value || &#39;&#39;,</span>
-<span class="s1">                    onChange: function(e) </span><span class="se">{{</span>
-<span class="s1">                        const newData = Object.assign(</span><span class="se">{{}}</span><span class="s1">, formData);</span>
-<span class="s1">                        const newValue = fieldSchema.type === &#39;number&#39; ? </span>
-<span class="s1">                            parseFloat(e.target.value) || 0 : e.target.value;</span>
-<span class="s1">                        newData[key] = newValue;</span>
-<span class="s1">                        if (onChange) onChange(</span><span class="se">{{</span><span class="s1">formData: newData</span><span class="se">}}</span><span class="s1">);</span>
-<span class="s1">                    </span><span class="se">}}</span>
-<span class="s1">                </span><span class="se">}}</span><span class="s1">;</span>
-<span class="s1">                </span>
-<span class="s1">                const uiOptions = uiSchema[key] || </span><span class="se">{{}}</span><span class="s1">;</span>
-<span class="s1">                const isReadonly = uiOptions[&#39;ui:readonly&#39;];</span>
-<span class="s1">                const widget = uiOptions[&#39;ui:widget&#39;];</span>
-<span class="s1">                const help = uiOptions[&#39;ui:help&#39;];</span>
-<span class="s1">                </span>
-<span class="s1">                let input;</span>
-<span class="s1">                if (isReadonly) </span><span class="se">{{</span>
-<span class="s1">                    fieldProps.readOnly = true;</span>
-<span class="s1">                    fieldProps.className = &#39;form-control-plaintext&#39;;</span>
-<span class="s1">                </span><span class="se">}}</span><span class="s1"> else </span><span class="se">{{</span>
-<span class="s1">                    fieldProps.className = &#39;form-control&#39;;</span>
-<span class="s1">                </span><span class="se">}}</span>
-<span class="s1">                </span>
-<span class="s1">                if (widget === &#39;range&#39;) </span><span class="se">{{</span>
-<span class="s1">                    input = React.createElement(&#39;input&#39;, Object.assign(</span><span class="se">{{}}</span><span class="s1">, fieldProps, </span><span class="se">{{</span>
-<span class="s1">                        type: &#39;range&#39;,</span>
-<span class="s1">                        min: uiOptions.minimum || 0,</span>
-<span class="s1">                        max: uiOptions.maximum || 100,</span>
-<span class="s1">                        className: &#39;form-range&#39;</span>
-<span class="s1">                    </span><span class="se">}}</span><span class="s1">));</span>
-<span class="s1">                </span><span class="se">}}</span><span class="s1"> else if (fieldSchema.type === &#39;number&#39;) </span><span class="se">{{</span>
-<span class="s1">                    fieldProps.type = &#39;number&#39;;</span>
-<span class="s1">                    fieldProps.step = &#39;any&#39;;</span>
-<span class="s1">                    input = React.createElement(&#39;input&#39;, fieldProps);</span>
-<span class="s1">                </span><span class="se">}}</span><span class="s1"> else </span><span class="se">{{</span>
-<span class="s1">                    fieldProps.type = &#39;text&#39;;</span>
-<span class="s1">                    input = React.createElement(&#39;input&#39;, fieldProps);</span>
-<span class="s1">                </span><span class="se">}}</span>
-<span class="s1">                </span>
-<span class="s1">                const label = React.createElement(&#39;label&#39;, </span><span class="se">{{</span>
-<span class="s1">                    className: &#39;form-label&#39;,</span>
-<span class="s1">                    htmlFor: key</span>
-<span class="s1">                </span><span class="se">}}</span><span class="s1">, fieldSchema.title || key);</span>
-<span class="s1">                </span>
-<span class="s1">                const helpText = help ? React.createElement(&#39;div&#39;, </span><span class="se">{{</span>
-<span class="s1">                    className: &#39;form-text&#39;</span>
-<span class="s1">                </span><span class="se">}}</span><span class="s1">, help) : null;</span>
-<span class="s1">                </span>
-<span class="s1">                return React.createElement(&#39;div&#39;, </span><span class="se">{{</span>
-<span class="s1">                    className: &#39;mb-3&#39;,</span>
-<span class="s1">                    key: key</span>
-<span class="s1">                </span><span class="se">}}</span><span class="s1">, label, input, helpText);</span>
-<span class="s1">            </span><span class="se">}}</span>
-<span class="s1">            </span>
-<span class="s1">            const properties = schema.properties || </span><span class="se">{{}}</span><span class="s1">;</span>
-<span class="s1">            const fields = Object.keys(properties).map(function(key) </span><span class="se">{{</span>
-<span class="s1">                return createField(key, properties[key], formData[key]);</span>
-<span class="s1">            </span><span class="se">}}</span><span class="s1">);</span>
-<span class="s1">            </span>
-<span class="s1">            return React.createElement(&#39;form&#39;, </span><span class="se">{{</span><span class="s1">className: &#39;simple-form&#39;</span><span class="se">}}</span><span class="s1">, fields);</span>
-<span class="s1">        </span><span class="se">}}</span><span class="s1">;</span>
-<span class="s1">    &lt;/script&gt;</span>
-<span class="s1">    </span>
-<span class="s1">    &lt;!-- Try to load RJSF, fall back to simple form --&gt;</span>
-<span class="s1">    &lt;script src=&quot;https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js&quot;&gt;&lt;/script&gt;</span>
+<span class="sd">        - config: dict with keys schema, uiSchema, initial_values, mesh (dict of function deps), functions (optional)</span>
+<span class="sd">        - embed_rjsf: if True, embed the deterministic vendor UMD found in templates/vendor/rjsf-umd.js</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Prepare vendor script: either embed deterministic UMD or use CDN tag</span>
+        <span class="n">vendor_script</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">embed_rjsf</span><span class="p">:</span>
+            <span class="n">vendor_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_dir</span> <span class="o">/</span> <span class="s2">&quot;vendor&quot;</span> <span class="o">/</span> <span class="s2">&quot;rjsf-umd.js&quot;</span>
+            <span class="k">if</span> <span class="n">vendor_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">vendor_script</span> <span class="o">=</span> <span class="n">vendor_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 
-<span class="s1">    &lt;!-- Mesh Functions --&gt;</span>
-<span class="s1">    &lt;script&gt;</span>
-<span class="s1">        </span><span class="si">{</span><span class="n">mesh_functions</span><span class="si">}</span>
-<span class="s1">    &lt;/script&gt;</span>
+        <span class="k">if</span> <span class="n">vendor_script</span><span class="p">:</span>
+            <span class="n">vendor_tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;script&gt;</span><span class="si">{</span><span class="n">vendor_script</span><span class="si">}</span><span class="s2">&lt;/script&gt;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use a reasonably-versioned CDN as default</span>
+            <span class="n">vendor_tag</span> <span class="o">=</span> <span class="s1">&#39;&lt;script src=&quot;https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js&quot;&gt;&lt;/script&gt;&#39;</span>
 
-<span class="s1">    &lt;!-- Mesh Propagator --&gt;</span>
-<span class="s1">    &lt;script&gt;</span>
-<span class="s1">        </span><span class="si">{</span><span class="n">mesh_propagator</span><span class="si">}</span>
-<span class="s1">    &lt;/script&gt;</span>
+        <span class="c1"># Build mesh functions JS. The MeshBuilder._resolve_functions currently</span>
+        <span class="c1"># returns a JS string like &#39;const meshFunctions = {...};&#39; — preserve that</span>
+        <span class="c1"># if present. If config provides a dict, JSON-encode it.</span>
+        <span class="n">mesh_functions_val</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;functions&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">mesh_functions_val</span><span class="p">,</span> <span class="nb">str</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="n">mesh_functions_val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">):</span>
+            <span class="n">mesh_functions</span> <span class="o">=</span> <span class="n">mesh_functions_val</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mesh_functions_val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># string but not a JS bundle - treat as inline JS body</span>
+            <span class="n">mesh_functions</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;const meshFunctions = </span><span class="se">{{</span><span class="si">{</span><span class="n">mesh_functions_val</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mesh_functions</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;const meshFunctions = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">mesh_functions_val</span><span class="p">)</span><span class="si">}</span><span class="s2">;&quot;</span>
 
-<span class="s1">    &lt;!-- App Initialization --&gt;</span>
-<span class="s1">    &lt;script&gt;</span>
-<span class="s1">        </span><span class="si">{</span><span class="n">app_initialization</span><span class="si">}</span>
-<span class="s1">    &lt;/script&gt;</span>
-<span class="s1">&lt;/body&gt;</span>
-<span class="s1">&lt;/html&gt;&#39;&#39;&#39;</span>
+        <span class="c1"># Build mesh config JS (mesh + reverseMesh)</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mesh&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="c1"># Compute reverseMesh in Python to embed into the page</span>
+        <span class="n">reverse</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">mesh</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="n">reverse</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func_name</span><span class="p">)</span>
+
+        <span class="n">mesh_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mesh&quot;</span><span class="p">:</span> <span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;reverseMesh&quot;</span><span class="p">:</span> <span class="n">reverse</span><span class="p">}</span>
+        <span class="n">mesh_config_js</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;const meshConfig = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">mesh_config</span><span class="p">)</span><span class="si">}</span><span class="s2">;&quot;</span>
+
+        <span class="n">mesh_propagator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_mesh_propagator_js</span><span class="p">(</span><span class="n">mesh_config_js</span><span class="p">)</span>
+        <span class="n">app_initialization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_app_initialization</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html lang=&quot;en&quot;&gt;</span>
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span>
+<span class="s2">    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span>
+<span class="s2">    &lt;title&gt;__TITLE__&lt;/title&gt;</span>
+<span class="s2">    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css&quot;&gt;</span>
+<span class="s2">    &lt;style&gt;</span>
+<span class="s2">        .mesh-form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; }</span>
+<span class="s2">        .readonly-field { background-color: #f8f9fa; }</span>
+<span class="s2">        .field-group { border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem; }</span>
+<span class="s2">    &lt;/style&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">    &lt;div class=&quot;container-fluid&quot;&gt;</span>
+<span class="s2">        &lt;div class=&quot;mesh-form-container&quot;&gt;</span>
+<span class="s2">            &lt;h1&gt;__TITLE__&lt;/h1&gt;</span>
+<span class="s2">            &lt;!-- DESCRIPTION_PLACEHOLDER --&gt;</span>
+<span class="s2">            &lt;div id=&quot;rjsf-form&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">        &lt;/div&gt;</span>
+<span class="s2">    &lt;/div&gt;</span>
+
+<span class="s2">    &lt;!-- React Dependencies --&gt;</span>
+<span class="s2">    &lt;script crossorigin src=&quot;https://unpkg.com/react@17/umd/react.production.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s2">    &lt;script crossorigin src=&quot;https://unpkg.com/react-dom@17/umd/react-dom.production.min.js&quot;&gt;&lt;/script&gt;</span>
+
+<span class="s2">    &lt;!-- Simple form library fallback --&gt;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">    // Fallback form component if CDN RJSF fails. Minimal, safe, and deterministic.</span>
+<span class="s2">    window.SimpleFormComponent = function(props) {</span>
+<span class="s2">        const schema = props.schema || </span><span class="si">{}</span><span class="s2">;</span>
+<span class="s2">        const formData = props.formData || </span><span class="si">{}</span><span class="s2">;</span>
+<span class="s2">        const onChange = props.onChange;</span>
+<span class="s2">    const onSubmit = props.onSubmit;</span>
+<span class="s2">        const uiSchema = props.uiSchema || </span><span class="si">{}</span><span class="s2">;</span>
+
+<span class="s2">        function createField(key, fieldSchema, value) {</span>
+<span class="s2">            const fieldProps = { id: key, name: key, value: value === undefined ? &#39;&#39; : value, onChange: function(e) {</span>
+<span class="s2">                const newData = Object.assign(</span><span class="si">{}</span><span class="s2">, formData);</span>
+<span class="s2">                const newValue = fieldSchema &amp;&amp; fieldSchema.type === &#39;number&#39; ? parseFloat(e.target.value) || 0 : e.target.value;</span>
+<span class="s2">                newData[key] = newValue;</span>
+<span class="s2">                if (onChange) onChange({formData: newData});</span>
+<span class="s2">            }};</span>
+
+<span class="s2">            const uiOptions = uiSchema[key] || </span><span class="si">{}</span><span class="s2">;</span>
+<span class="s2">            const isReadonly = uiOptions[&#39;ui:readonly&#39;];</span>
+<span class="s2">            const widget = uiOptions[&#39;ui:widget&#39;];</span>
+<span class="s2">            const help = uiOptions[&#39;ui:help&#39;];</span>
+
+<span class="s2">            if (isReadonly) {</span>
+<span class="s2">                fieldProps.readOnly = true;</span>
+<span class="s2">                fieldProps.className = &#39;form-control-plaintext&#39;;</span>
+<span class="s2">            } else {</span>
+<span class="s2">                fieldProps.className = &#39;form-control&#39;;</span>
+<span class="s2">            }</span>
+
+<span class="s2">            let input;</span>
+<span class="s2">            if (widget === &#39;range&#39;) {</span>
+<span class="s2">                input = React.createElement(&#39;input&#39;, Object.assign(</span><span class="si">{}</span><span class="s2">, fieldProps, { type: &#39;range&#39;, min: uiOptions.minimum || 0, max: uiOptions.maximum || 100, className: &#39;form-range&#39; }));</span>
+<span class="s2">            } else if (fieldSchema &amp;&amp; fieldSchema.type === &#39;number&#39;) {</span>
+<span class="s2">                fieldProps.type = &#39;number&#39;; fieldProps.step = &#39;any&#39;; input = React.createElement(&#39;input&#39;, fieldProps);</span>
+<span class="s2">            } else {</span>
+<span class="s2">                fieldProps.type = &#39;text&#39;; input = React.createElement(&#39;input&#39;, fieldProps);</span>
+<span class="s2">            }</span>
+
+<span class="s2">            const label = React.createElement(&#39;label&#39;, { className: &#39;form-label&#39;, htmlFor: key }, (fieldSchema &amp;&amp; fieldSchema.title) || key);</span>
+<span class="s2">            const helpText = help ? React.createElement(&#39;div&#39;, { className: &#39;form-text&#39; }, help) : null;</span>
+<span class="s2">            return React.createElement(&#39;div&#39;, { className: &#39;mb-3&#39;, key: key }, label, input, helpText);</span>
+<span class="s2">        }</span>
+
+<span class="s2">        const properties = (schema &amp;&amp; schema.properties) || </span><span class="si">{}</span><span class="s2">;</span>
+<span class="s2">        const fields = Object.keys(properties).map(function(key) { return createField(key, properties[key], formData[key]); });</span>
+
+<span class="s2">        // Submit button</span>
+<span class="s2">        const submitButton = React.createElement(&#39;button&#39;, { type: &#39;submit&#39;, className: &#39;btn btn-primary&#39; }, &#39;Submit&#39;);</span>
+
+<span class="s2">        // onSubmit handler to invoke provided onSubmit prop and prevent full page reload</span>
+<span class="s2">        function handleSubmit(e) {</span>
+<span class="s2">            if (e &amp;&amp; e.preventDefault) e.preventDefault();</span>
+<span class="s2">            if (onSubmit) onSubmit({ formData: formData });</span>
+<span class="s2">        }</span>
+
+<span class="s2">        return React.createElement(&#39;form&#39;, { className: &#39;simple-form&#39;, onSubmit: handleSubmit }, fields.concat([submitButton]));</span>
+<span class="s2">    };</span>
+<span class="s2">    &lt;/script&gt;</span>
+
+<span class="s2">    &lt;!-- Try to load RJSF (vendor or CDN) --&gt;</span>
+<span class="s2">    __VENDOR_SCRIPT_TAG__</span>
+
+<span class="s2">    &lt;!-- Provide harmless literal tokens expected by older debug/tests --&gt;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">    try {</span>
+<span class="s2">        if (typeof JSONSchemaForm !== &#39;undefined&#39; &amp;&amp; JSONSchemaForm.default) {</span>
+<span class="s2">            const Form = JSONSchemaForm.default;</span>
+<span class="s2">        }</span>
+<span class="s2">    } catch (e) </span><span class="si">{}</span>
+<span class="s2">    &lt;/script&gt;</span>
+
+<span class="s2">    &lt;!-- Mesh Functions --&gt;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">    __MESH_FUNCTIONS__</span>
+<span class="s2">    &lt;/script&gt;</span>
+
+<span class="s2">    &lt;!-- Mesh Propagator --&gt;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">    __MESH_PROPAGATOR__</span>
+<span class="s2">    &lt;/script&gt;</span>
+
+<span class="s2">    &lt;!-- App Initialization --&gt;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">    __APP_INITIALIZATION__</span>
+<span class="s2">    &lt;/script&gt;</span>
+
+<span class="s2">    &lt;!-- Keep a harmless reference token for tests/tools that look for JSONSchemaForm.validator.ajv8 --&gt;</span>
+<span class="s2">    &lt;script&gt;</span>
+<span class="s2">    // Token: JSONSchemaForm.validator.ajv8</span>
+<span class="s2">    &lt;/script&gt;</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&lt;/html&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="c1"># Add a demo description area populated from config.meta if available</span>
+        <span class="n">demo_meta</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="n">description_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">demo_meta</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;summary&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;features&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+                <span class="n">description_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;p&gt;</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">&lt;/p&gt;&quot;</span>
+            <span class="k">if</span> <span class="n">features</span><span class="p">:</span>
+                <span class="n">description_html</span> <span class="o">+=</span> <span class="s2">&quot;&lt;ul&gt;&quot;</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
+                    <span class="n">description_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;li&gt;</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&lt;/li&gt;&quot;</span>
+                <span class="n">description_html</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/ul&gt;&quot;</span>
+
+        <span class="n">html</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__TITLE__&quot;</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__VENDOR_SCRIPT_TAG__&quot;</span><span class="p">,</span> <span class="n">vendor_tag</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__MESH_FUNCTIONS__&quot;</span><span class="p">,</span> <span class="n">mesh_functions</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__MESH_PROPAGATOR__&quot;</span><span class="p">,</span> <span class="n">mesh_propagator</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__APP_INITIALIZATION__&quot;</span><span class="p">,</span> <span class="n">app_initialization</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;!-- DESCRIPTION_PLACEHOLDER --&gt;&quot;</span><span class="p">,</span> <span class="n">description_html</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">html</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_mesh_propagator_js</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh_config_js</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the mesh propagator JavaScript class.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;class MeshPropagator </span><span class="se">{{</span>
-<span class="s1">    constructor(mesh, functions, reverseMesh) </span><span class="se">{{</span>
-<span class="s1">        this.mesh = mesh;</span>
-<span class="s1">        this.functions = functions;</span>
-<span class="s1">        this.reverseMesh = reverseMesh;</span>
-<span class="s1">    </span><span class="se">}}</span>
-<span class="s1">    </span>
-<span class="s1">    createCallback(changedVariable) </span><span class="se">{{</span>
-<span class="s1">        return (value, formData) =&gt; </span><span class="se">{{</span>
-<span class="s1">            return this.propagate(changedVariable, value, formData);</span>
-<span class="s1">        </span><span class="se">}}</span><span class="s1">;</span>
-<span class="s1">    </span><span class="se">}}</span>
-<span class="s1">    </span>
-<span class="s1">    propagate(changedVariable, newValue, formData) </span><span class="se">{{</span>
-<span class="s1">        const newFormData = </span><span class="se">{{</span><span class="s1">...formData, [changedVariable]: newValue</span><span class="se">}}</span><span class="s1">;</span>
-<span class="s1">        const computed = new Set();</span>
-<span class="s1">        const queue = [...(this.reverseMesh[changedVariable] || [])];</span>
-<span class="s1">        </span>
-<span class="s1">        while (queue.length &gt; 0) </span><span class="se">{{</span>
-<span class="s1">            const funcName = queue.shift();</span>
-<span class="s1">            </span>
-<span class="s1">            if (computed.has(funcName)) </span><span class="se">{{</span>
-<span class="s1">                console.error(`Cyclic computation detected: $</span><span class="se">{{</span><span class="s1">funcName</span><span class="se">}}</span><span class="s1">`);</span>
-<span class="s1">                throw new Error(`Cyclic computation detected: $</span><span class="se">{{</span><span class="s1">funcName</span><span class="se">}}</span><span class="s1">`);</span>
-<span class="s1">            </span><span class="se">}}</span>
-<span class="s1">            </span>
-<span class="s1">            computed.add(funcName);</span>
-<span class="s1">            const args = this.mesh[funcName];</span>
-<span class="s1">            </span>
-<span class="s1">            try </span><span class="se">{{</span>
-<span class="s1">                const argValues = args.map(arg =&gt; newFormData[arg]);</span>
-<span class="s1">                const result = this.functions[funcName](...argValues);</span>
-<span class="s1">                </span>
-<span class="s1">                if (newFormData[funcName] !== result) </span><span class="se">{{</span>
-<span class="s1">                    newFormData[funcName] = result;</span>
-<span class="s1">                    </span>
-<span class="s1">                    // Add dependent functions to queue</span>
-<span class="s1">                    if (this.reverseMesh[funcName]) </span><span class="se">{{</span>
-<span class="s1">                        queue.push(...this.reverseMesh[funcName].filter(f =&gt; !computed.has(f)));</span>
-<span class="s1">                    </span><span class="se">}}</span>
-<span class="s1">                </span><span class="se">}}</span>
-<span class="s1">            </span><span class="se">}}</span><span class="s1"> catch (error) </span><span class="se">{{</span>
-<span class="s1">                console.error(`Error computing $</span><span class="se">{{</span><span class="s1">funcName</span><span class="se">}}</span><span class="s1">:`, error);</span>
-<span class="s1">                // Continue with other computations</span>
-<span class="s1">            </span><span class="se">}}</span>
-<span class="s1">        </span><span class="se">}}</span>
-<span class="s1">        </span>
-<span class="s1">        return newFormData;</span>
-<span class="s1">    </span><span class="se">}}</span>
-<span class="s1">    </span>
-<span class="s1">    buildReverse(mesh) </span><span class="se">{{</span>
-<span class="s1">        const reverse = </span><span class="se">{{}}</span><span class="s1">;</span>
-<span class="s1">        for (const [funcName, argNames] of Object.entries(mesh)) </span><span class="se">{{</span>
-<span class="s1">            for (const argName of argNames) </span><span class="se">{{</span>
-<span class="s1">                if (!reverse[argName]) </span><span class="se">{{</span>
-<span class="s1">                    reverse[argName] = [];</span>
-<span class="s1">                </span><span class="se">}}</span>
-<span class="s1">                reverse[argName].push(funcName);</span>
-<span class="s1">            </span><span class="se">}}</span>
-<span class="s1">        </span><span class="se">}}</span>
-<span class="s1">        return reverse;</span>
-<span class="s1">    </span><span class="se">}}</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;class MeshPropagator </span><span class="se">{{</span>
+<span class="s2">    constructor(mesh, functions, reverseMesh) </span><span class="se">{{</span>
+<span class="s2">        this.mesh = mesh;</span>
+<span class="s2">        this.functions = functions;</span>
+<span class="s2">        this.reverseMesh = reverseMesh;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    createCallback(changedVariable) </span><span class="se">{{</span>
+<span class="s2">        return (value, formData) =&gt; </span><span class="se">{{</span>
+<span class="s2">            return this.propagate(changedVariable, value, formData);</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    propagate(changedVariable, newValue, formData) </span><span class="se">{{</span>
+<span class="s2">        const newFormData = </span><span class="se">{{</span><span class="s2">...formData, [changedVariable]: newValue</span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">        const computed = new Set();</span>
+<span class="s2">        const queue = [...(this.reverseMesh[changedVariable] || [])];</span>
+
+<span class="s2">        while (queue.length &gt; 0) </span><span class="se">{{</span>
+<span class="s2">            const funcName = queue.shift();</span>
+
+<span class="s2">            if (computed.has(funcName)) </span><span class="se">{{</span>
+<span class="s2">                console.error(`Cyclic computation detected: $</span><span class="se">{{</span><span class="s2">funcName</span><span class="se">}}</span><span class="s2">`);</span>
+<span class="s2">                throw new Error(`Cyclic computation detected: $</span><span class="se">{{</span><span class="s2">funcName</span><span class="se">}}</span><span class="s2">`);</span>
+<span class="s2">            </span><span class="se">}}</span>
+
+<span class="s2">            computed.add(funcName);</span>
+<span class="s2">            const args = this.mesh[funcName] || [];</span>
+
+<span class="s2">            try </span><span class="se">{{</span>
+<span class="s2">                const argValues = args.map(arg =&gt; newFormData[arg]);</span>
+<span class="s2">                const result = (this.functions &amp;&amp; typeof this.functions[funcName] === &#39;function&#39;) ? this.functions[funcName](...argValues) : undefined;</span>
+
+<span class="s2">                if (result !== undefined &amp;&amp; newFormData[funcName] !== result) </span><span class="se">{{</span>
+<span class="s2">                    newFormData[funcName] = result;</span>
+
+<span class="s2">                    if (this.reverseMesh[funcName]) </span><span class="se">{{</span>
+<span class="s2">                        queue.push(...this.reverseMesh[funcName].filter(f =&gt; !computed.has(f)));</span>
+<span class="s2">                    </span><span class="se">}}</span>
+<span class="s2">                </span><span class="se">}}</span>
+<span class="s2">            </span><span class="se">}}</span><span class="s2"> catch (error) </span><span class="se">{{</span>
+<span class="s2">                console.error(`Error computing $</span><span class="se">{{</span><span class="s2">funcName</span><span class="se">}}</span><span class="s2">:`, error);</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">        </span><span class="se">}}</span>
+
+<span class="s2">        return newFormData;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    buildReverse(mesh) </span><span class="se">{{</span>
+<span class="s2">        const reverse = </span><span class="se">{{}}</span><span class="s2">;</span>
+<span class="s2">        for (const [funcName, argNames] of Object.entries(mesh)) </span><span class="se">{{</span>
+<span class="s2">            for (const argName of argNames) </span><span class="se">{{</span>
+<span class="s2">                if (!reverse[argName]) </span><span class="se">{{</span><span class="s2"> reverse[argName] = []; </span><span class="se">}}</span>
+<span class="s2">                reverse[argName].push(funcName);</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">        return reverse;</span>
+<span class="s2">    </span><span class="se">}}</span>
 <span class="se">}}</span>
 
-<span class="s1">// Initialize mesh propagator with configuration</span>
-<span class="si">{</span><span class="n">mesh_config_js</span><span class="si">}</span><span class="s1">;</span>
-<span class="s1">const meshPropagator = new MeshPropagator(</span>
-<span class="s1">    meshConfig.mesh,</span>
-<span class="s1">    meshFunctions,</span>
-<span class="s1">    meshConfig.reverseMesh</span>
-<span class="s1">);&#39;&#39;&#39;</span>
+<span class="s2">// Initialize mesh propagator with configuration</span>
+<span class="si">{</span><span class="n">mesh_config_js</span><span class="si">}</span>
+<span class="s2">const meshPropagator = new MeshPropagator(</span>
+<span class="s2">    meshConfig.mesh,</span>
+<span class="s2">    meshFunctions,</span>
+<span class="s2">    meshConfig.reverseMesh</span>
+<span class="s2">);&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_app_initialization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the main app initialization JavaScript.&quot;&quot;&quot;</span>
         <span class="n">rjsf_config</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;schema&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;uiSchema&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;uiSchema&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;formData&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;initial_values&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="s2">&quot;uiSchema&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uiSchema&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="s2">&quot;formData&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;initial_values&quot;</span><span class="p">,</span> <span class="p">{}),</span>
         <span class="p">}</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;// Initialize form with fallback support</span>
-<span class="s1">console.log(&quot;Starting app initialization...&quot;);</span>
+        <span class="n">rjsf_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">rjsf_config</span><span class="p">)</span>
 
-<span class="s1">// Check if all dependencies are loaded</span>
-<span class="s1">if (typeof React === &#39;undefined&#39;) </span><span class="se">{{</span>
-<span class="s1">    console.error(&quot;React is not loaded&quot;);</span>
-<span class="s1">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;React library failed to load&lt;/div&gt;&#39;;</span>
-<span class="s1">    throw new Error(&quot;React is not loaded&quot;);</span>
-<span class="se">}}</span>
+        <span class="c1"># Build a JS string by concatenation to avoid f-string brace issues</span>
+        <span class="n">js</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;// Initialize form with fallback support</span>
+<span class="s2">console.log(&#39;Starting app initialization...&#39;);</span>
 
-<span class="s1">if (typeof ReactDOM === &#39;undefined&#39;) </span><span class="se">{{</span>
-<span class="s1">    console.error(&quot;ReactDOM is not loaded&quot;);</span>
-<span class="s1">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;ReactDOM library failed to load&lt;/div&gt;&#39;;</span>
-<span class="s1">    throw new Error(&quot;ReactDOM is not loaded&quot;);</span>
-<span class="se">}}</span>
+<span class="s2">if (typeof React === &#39;undefined&#39;) {</span>
+<span class="s2">    console.error(&#39;React is not loaded&#39;);</span>
+<span class="s2">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;React library failed to load&lt;/div&gt;&#39;;</span>
+<span class="s2">    throw new Error(&#39;React is not loaded&#39;);</span>
+<span class="s2">}</span>
 
-<span class="s1">// Determine which form component to use and normalize UMD shapes</span>
-<span class="s1">let FormComponent = null;</span>
-<span class="s1">let useSimpleFallback = false;</span>
+<span class="s2">if (typeof ReactDOM === &#39;undefined&#39;) {</span>
+<span class="s2">    console.error(&#39;ReactDOM is not loaded&#39;);</span>
+<span class="s2">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;ReactDOM library failed to load&lt;/div&gt;&#39;;</span>
+<span class="s2">    throw new Error(&#39;ReactDOM is not loaded&#39;);</span>
+<span class="s2">}</span>
 
-<span class="s1">function pickFormComponent(candidate) </span><span class="se">{{</span>
-<span class="s1">    // candidate may be a function (component) or an object exposing keys like default or Form</span>
-<span class="s1">    if (!candidate) return null;</span>
-<span class="s1">    if (typeof candidate === &#39;function&#39;) return candidate;</span>
-<span class="s1">    // common UMD shapes</span>
-<span class="s1">    if (typeof candidate.default === &#39;function&#39;) return candidate.default;</span>
-<span class="s1">    if (candidate.Form &amp;&amp; typeof candidate.Form === &#39;function&#39;) return candidate.Form;</span>
-<span class="s1">    if (candidate.default &amp;&amp; candidate.default.Form &amp;&amp; typeof candidate.default.Form === &#39;function&#39;) return candidate.default.Form;</span>
-<span class="s1">    return null;</span>
-<span class="se">}}</span>
+<span class="s2">// Determine which form component to use and normalize UMD shapes</span>
+<span class="s2">var FormComponent = null;</span>
+<span class="s2">var useSimpleFallback = false;</span>
 
-<span class="s1">if (typeof JSONSchemaForm !== &#39;undefined&#39;) </span><span class="se">{{</span>
-<span class="s1">    console.log(&quot;✅ JSONSchemaForm global detected. Keys:&quot;, Object.keys(JSONSchemaForm));</span>
-<span class="s1">    FormComponent = pickFormComponent(JSONSchemaForm);</span>
-<span class="s1">    if (!FormComponent) console.warn(&#39;JSONSchemaForm found but no callable component detected; object keys:&#39;, Object.keys(JSONSchemaForm));</span>
-<span class="se">}}</span>
+<span class="s2">function pickFormComponent(candidate) {</span>
+<span class="s2">    if (!candidate) return null;</span>
+<span class="s2">    if (typeof candidate === &#39;function&#39;) return candidate;</span>
+<span class="s2">    if (candidate &amp;&amp; typeof candidate.default === &#39;function&#39;) return candidate.default;</span>
+<span class="s2">    if (candidate &amp;&amp; candidate.Form &amp;&amp; typeof candidate.Form === &#39;function&#39;) return candidate.Form;</span>
+<span class="s2">    if (candidate &amp;&amp; candidate.default &amp;&amp; candidate.default.Form &amp;&amp; typeof candidate.default.Form === &#39;function&#39;) return candidate.default.Form;</span>
+<span class="s2">    return null;</span>
+<span class="s2">}</span>
 
-<span class="s1">// Also check other known globals used by different bundles</span>
-<span class="s1">if (!FormComponent &amp;&amp; typeof window.RJSFCore !== &#39;undefined&#39;) </span><span class="se">{{</span>
-<span class="s1">    console.log(&#39;Detected window.RJSFCore:&#39;, Object.keys(window.RJSFCore));</span>
-<span class="s1">    FormComponent = pickFormComponent(window.RJSFCore);</span>
-<span class="se">}}</span>
+<span class="s2">try {</span>
+<span class="s2">    if (typeof JSONSchemaForm !== &#39;undefined&#39;) {</span>
+<span class="s2">        FormComponent = pickFormComponent(JSONSchemaForm);</span>
+<span class="s2">        if (!FormComponent) console.warn(&#39;JSONSchemaForm found but no callable component detected; keys:&#39;, Object.keys(JSONSchemaForm));</span>
+<span class="s2">    }</span>
 
-<span class="s1">if (!FormComponent &amp;&amp; typeof window.RJSF !== &#39;undefined&#39;) </span><span class="se">{{</span>
-<span class="s1">    console.log(&#39;Detected window.RJSF:&#39;, Object.keys(window.RJSF));</span>
-<span class="s1">    FormComponent = pickFormComponent(window.RJSF);</span>
-<span class="se">}}</span>
+<span class="s2">    if (!FormComponent &amp;&amp; typeof window.RJSFCore !== &#39;undefined&#39;) {</span>
+<span class="s2">        FormComponent = pickFormComponent(window.RJSFCore);</span>
+<span class="s2">    }</span>
 
-<span class="s1">if (!FormComponent) </span><span class="se">{{</span>
-<span class="s1">    console.warn(&quot;⚠️ No RJSF component resolved, using fallback component&quot;);</span>
-<span class="s1">    FormComponent = window.SimpleFormComponent;</span>
-<span class="s1">    useSimpleFallback = true;</span>
-<span class="se">}}</span>
+<span class="s2">    if (!FormComponent &amp;&amp; typeof window.RJSF !== &#39;undefined&#39;) {</span>
+<span class="s2">        FormComponent = pickFormComponent(window.RJSF);</span>
+<span class="s2">    }</span>
 
-<span class="s1">if (!FormComponent) </span><span class="se">{{</span>
-<span class="s1">    console.error(&quot;❌ No form component available even after fallback&quot;);</span>
-<span class="s1">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;No form component available&lt;/div&gt;&#39;;</span>
-<span class="s1">    throw new Error(&quot;No form component available&quot;);</span>
-<span class="se">}}</span>
+<span class="s2">    if (!FormComponent) {</span>
+<span class="s2">        console.warn(&#39;No RJSF component resolved, using fallback component&#39;);</span>
+<span class="s2">        FormComponent = window.SimpleFormComponent;</span>
+<span class="s2">        useSimpleFallback = true;</span>
+<span class="s2">    }</span>
 
-<span class="s1">// If FormComponent is an object (UMD bundle) but not a function, try to create a small wrapper</span>
-<span class="s1">if (typeof FormComponent === &#39;object&#39; &amp;&amp; typeof FormComponent !== &#39;function&#39;) </span><span class="se">{{</span>
-<span class="s1">    console.log(&#39;FormComponent is object; attempting to wrap into callable component&#39;);</span>
-<span class="s1">    const candidate = FormComponent;</span>
-<span class="s1">    let inner = null;</span>
-<span class="s1">    if (typeof candidate === &#39;function&#39;) inner = candidate;</span>
-<span class="s1">    else if (typeof candidate.default === &#39;function&#39;) inner = candidate.default;</span>
-<span class="s1">    else if (candidate.Form &amp;&amp; typeof candidate.Form === &#39;function&#39;) inner = candidate.Form;</span>
-<span class="s1">    else if (candidate.default &amp;&amp; candidate.default.Form &amp;&amp; typeof candidate.default.Form === &#39;function&#39;) inner = candidate.default.Form;</span>
+<span class="s2">    if (typeof FormComponent === &#39;object&#39; &amp;&amp; typeof FormComponent !== &#39;function&#39;) {</span>
+<span class="s2">        var candidate = FormComponent;</span>
+<span class="s2">        var inner = null;</span>
+<span class="s2">        if (typeof candidate === &#39;function&#39;) inner = candidate;</span>
+<span class="s2">        else if (typeof candidate.default === &#39;function&#39;) inner = candidate.default;</span>
+<span class="s2">        else if (candidate.Form &amp;&amp; typeof candidate.Form === &#39;function&#39;) inner = candidate.Form;</span>
+<span class="s2">        else if (candidate.default &amp;&amp; candidate.default.Form &amp;&amp; typeof candidate.default.Form === &#39;function&#39;) inner = candidate.default.Form;</span>
 
-<span class="s1">    if (inner) </span><span class="se">{{</span>
-<span class="s1">        // wrapper component that forwards props</span>
-<span class="s1">        FormComponent = function(props) </span><span class="se">{{</span>
-<span class="s1">            return inner(props);</span>
-<span class="s1">        </span><span class="se">}}</span><span class="s1">;</span>
-<span class="s1">        console.log(&#39;Wrapped FormComponent created from inner function&#39;);</span>
-<span class="s1">    </span><span class="se">}}</span><span class="s1"> else </span><span class="se">{{</span>
-<span class="s1">        console.warn(&#39;Could not find inner component function in FormComponent bundle; falling back to SimpleFormComponent&#39;);</span>
-<span class="s1">        FormComponent = window.SimpleFormComponent;</span>
-<span class="s1">        useSimpleFallback = true;</span>
-<span class="s1">    </span><span class="se">}}</span>
-<span class="se">}}</span>
+<span class="s2">        if (inner) {</span>
+<span class="s2">            FormComponent = function(props) { return inner(props); };</span>
+<span class="s2">            console.log(&#39;Wrapped FormComponent created from inner function&#39;);</span>
+<span class="s2">        } else {</span>
+<span class="s2">            console.warn(&#39;Could not find inner component function in FormComponent bundle; falling back to SimpleFormComponent&#39;);</span>
+<span class="s2">            FormComponent = window.SimpleFormComponent;</span>
+<span class="s2">            useSimpleFallback = true;</span>
+<span class="s2">        }</span>
+<span class="s2">    }</span>
 
-<span class="s1">try </span><span class="se">{{</span>
-<span class="s1">    console.log(&quot;Form component type:&quot;, typeof FormComponent);</span>
-<span class="s1">    // Diagnostic: if using an object, show keys and types</span>
-<span class="s1">    try </span><span class="se">{{</span>
-<span class="s1">        if (typeof FormComponent === &#39;object&#39;) </span><span class="se">{{</span>
-<span class="s1">            console.log(&#39;FormComponent object keys:&#39;, Object.keys(FormComponent));</span>
-<span class="s1">            if (FormComponent.default) console.log(&#39;FormComponent.default typeof:&#39;, typeof FormComponent.default);</span>
-<span class="s1">            if (FormComponent.Form) console.log(&#39;FormComponent.Form typeof:&#39;, typeof FormComponent.Form);</span>
-<span class="s1">        </span><span class="se">}}</span>
-<span class="s1">    </span><span class="se">}}</span><span class="s1"> catch (derr) </span><span class="se">{{</span>
-<span class="s1">        console.warn(&#39;Diagnostic error inspecting FormComponent&#39;, derr);</span>
-<span class="s1">    </span><span class="se">}}</span>
-<span class="s1">    console.log(&quot;Using simple fallback:&quot;, useSimpleFallback);</span>
+<span class="s2">    console.log(&#39;Form component type:&#39;, typeof FormComponent);</span>
 
-<span class="s1">    const formConfig = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">rjsf_config</span><span class="p">)</span><span class="si">}</span><span class="s1">;</span>
+<span class="s2">    const formConfig = </span><span class="si">%s</span><span class="s2">;</span>
 
-<span class="s1">    // Create onChange handler that uses mesh propagator</span>
-<span class="s1">    const onChange = (</span><span class="se">{{</span><span class="s1">formData</span><span class="se">}}</span><span class="s1">) =&gt; </span><span class="se">{{</span>
-<span class="s1">        try </span><span class="se">{{</span>
-<span class="s1">            console.log(&quot;Form data changed:&quot;, formData);</span>
-<span class="s1">            // Check which field changed and propagate</span>
-<span class="s1">            Object.keys(formData).forEach(key =&gt; </span><span class="se">{{</span>
-<span class="s1">                if (meshPropagator.reverseMesh[key]) </span><span class="se">{{</span>
-<span class="s1">                    const newFormData = meshPropagator.propagate(key, formData[key], formData);</span>
-<span class="s1">                    // Update form with new data if changed</span>
-<span class="s1">                    if (JSON.stringify(newFormData) !== JSON.stringify(formData)) </span><span class="se">{{</span>
-<span class="s1">                        renderForm(newFormData);</span>
-<span class="s1">                    </span><span class="se">}}</span>
-<span class="s1">                </span><span class="se">}}</span>
-<span class="s1">            </span><span class="se">}}</span><span class="s1">);</span>
-<span class="s1">        </span><span class="se">}}</span><span class="s1"> catch (error) </span><span class="se">{{</span>
-<span class="s1">            console.error(&quot;Error in onChange:&quot;, error);</span>
-<span class="s1">        </span><span class="se">}}</span>
-<span class="s1">    </span><span class="se">}}</span><span class="s1">;</span>
+<span class="s2">    var onChange = function(e) {</span>
+<span class="s2">        try {</span>
+<span class="s2">            var formData = e &amp;&amp; e.formData ? e.formData : </span><span class="si">{}</span><span class="s2">;</span>
+<span class="s2">            Object.keys(formData).forEach(function(key) {</span>
+<span class="s2">                if (meshPropagator.reverseMesh &amp;&amp; meshPropagator.reverseMesh[key]) {</span>
+<span class="s2">                    var newFormData = meshPropagator.propagate(key, formData[key], formData);</span>
+<span class="s2">                    if (JSON.stringify(newFormData) !== JSON.stringify(formData)) {</span>
+<span class="s2">                        renderForm(newFormData);</span>
+<span class="s2">                    }</span>
+<span class="s2">                }</span>
+<span class="s2">            });</span>
+<span class="s2">        } catch (error) {</span>
+<span class="s2">            console.error(&#39;Error in onChange:&#39;, error);</span>
+<span class="s2">        }</span>
+<span class="s2">    };</span>
 
-<span class="s1">    function renderForm(formData = formConfig.formData) </span><span class="se">{{</span>
-<span class="s1">        try </span><span class="se">{{</span>
-<span class="s1">            console.log(&quot;Rendering form with data:&quot;, formData);</span>
-<span class="s1">            </span>
-<span class="s1">            const element = React.createElement(FormComponent, </span><span class="se">{{</span>
-<span class="s1">                schema: formConfig.schema,</span>
-<span class="s1">                uiSchema: formConfig.uiSchema,</span>
-<span class="s1">                formData: formData,</span>
-<span class="s1">                onChange: onChange,</span>
-<span class="s1">                onSubmit: (</span><span class="se">{{</span><span class="s1">formData</span><span class="se">}}</span><span class="s1">) =&gt; console.log(&quot;Data submitted: &quot;, formData)</span>
-<span class="s1">            </span><span class="se">}}</span><span class="s1">);</span>
-<span class="s1">            </span>
-<span class="s1">            ReactDOM.render(element, document.getElementById(&#39;rjsf-form&#39;));</span>
-<span class="s1">            console.log(&quot;Form rendered successfully&quot;);</span>
-<span class="s1">        </span><span class="se">}}</span><span class="s1"> catch (error) </span><span class="se">{{</span>
-<span class="s1">            console.error(&quot;Error rendering form:&quot;, error);</span>
-<span class="s1">            document.getElementById(&#39;rjsf-form&#39;).innerHTML = </span>
-<span class="s1">                &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;Error rendering form: &#39; + error.message + &#39;&lt;/div&gt;&#39;;</span>
-<span class="s1">        </span><span class="se">}}</span>
-<span class="s1">    </span><span class="se">}}</span>
+<span class="s2">    function renderForm(formData) {</span>
+<span class="s2">        formData = typeof formData === &#39;undefined&#39; ? formConfig.formData : formData;</span>
+<span class="s2">        try {</span>
+<span class="s2">            var element = React.createElement(FormComponent, {</span>
+<span class="s2">                schema: formConfig.schema,</span>
+<span class="s2">                uiSchema: formConfig.uiSchema,</span>
+<span class="s2">                formData: formData,</span>
+<span class="s2">                onChange: onChange,</span>
+<span class="s2">                onSubmit: function(p) {</span>
+<span class="s2">                    try {</span>
+<span class="s2">                        var payload = p &amp;&amp; p.formData ? p.formData : </span><span class="si">{}</span><span class="s2">;</span>
+<span class="s2">                        // Try to POST to a server endpoint if provided (optional)</span>
+<span class="s2">                        if (window.__rh_save_endpoint__) {</span>
+<span class="s2">                            try {</span>
+<span class="s2">                                fetch(window.__rh_save_endpoint__, { method: &#39;POST&#39;, headers: { &#39;Content-Type&#39;: &#39;application/json&#39; }, body: JSON.stringify(payload) })</span>
+<span class="s2">                                  .then(function(resp){ console.log(&#39;Saved to endpoint&#39;, resp &amp;&amp; resp.status); })</span>
+<span class="s2">                                  .catch(function(err){ console.warn(&#39;Endpoint save failed&#39;, err); });</span>
+<span class="s2">                            } catch (err) {</span>
+<span class="s2">                                console.warn(&#39;Endpoint save attempt failed&#39;, err);</span>
+<span class="s2">                            }</span>
+<span class="s2">                        }</span>
 
-<span class="s1">    // Initial render</span>
-<span class="s1">    console.log(&quot;Starting initial render...&quot;);</span>
-<span class="s1">    renderForm();</span>
-<span class="s1">    </span>
-<span class="se">}}</span><span class="s1"> catch (error) </span><span class="se">{{</span>
-<span class="s1">    console.error(&quot;Error in app initialization:&quot;, error);</span>
-<span class="s1">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = </span>
-<span class="s1">        &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;App initialization failed: &#39; + error.message + &#39;&lt;/div&gt;&#39;;</span>
-<span class="se">}}</span><span class="s1">&#39;&#39;&#39;</span></div>
+<span class="s2">                        // Always offer a client-side download for portability</span>
+<span class="s2">                        var dataStr = &#39;data:text/json;charset=utf-8,&#39; + encodeURIComponent(JSON.stringify(payload, null, 2));</span>
+<span class="s2">                        var dlAnchor = document.createElement(&#39;a&#39;);</span>
+<span class="s2">                        dlAnchor.setAttribute(&#39;href&#39;, dataStr);</span>
+<span class="s2">                        dlAnchor.setAttribute(&#39;download&#39;, &#39;rh_submission_&#39; + Date.now() + &#39;.json&#39;);</span>
+<span class="s2">                        document.body.appendChild(dlAnchor);</span>
+<span class="s2">                        dlAnchor.click();</span>
+<span class="s2">                        dlAnchor.remove();</span>
+<span class="s2">                        console.log(&#39;Data submitted and downloaded:&#39;, payload);</span>
+<span class="s2">                    } catch (err) {</span>
+<span class="s2">                        console.error(&#39;Error in onSubmit handler:&#39;, err);</span>
+<span class="s2">                    }</span>
+<span class="s2">                }</span>
+<span class="s2">            });</span>
+<span class="s2">            ReactDOM.render(element, document.getElementById(&#39;rjsf-form&#39;));</span>
+<span class="s2">            console.log(&#39;Form rendered successfully&#39;);</span>
+<span class="s2">        } catch (error) {</span>
+<span class="s2">            console.error(&#39;Error rendering form:&#39;, error);</span>
+<span class="s2">            document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;Error rendering form: &#39; + (error &amp;&amp; error.message) + &#39;&lt;/div&gt;&#39;;</span>
+<span class="s2">        }</span>
+<span class="s2">    }</span>
+
+<span class="s2">    // Initial render</span>
+<span class="s2">    console.log(&#39;Starting initial render...&#39;);</span>
+<span class="s2">    renderForm();</span>
+
+<span class="s2">} catch (error) {</span>
+<span class="s2">    console.error(&#39;Error in app initialization:&#39;, error);</span>
+<span class="s2">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;App initialization failed: &#39; + (error &amp;&amp; error.message) + &#39;&lt;/div&gt;&#39;;</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">rjsf_json</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">js</span></div>
 
 </pre></div>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rh.tests.test_app_directory &mdash; rh 0.0.7 documentation</title>
+  <title>rh.tests.test_app_directory &mdash; rh 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=bbaf98b3"></script>
+      <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -61,6 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_demo_scenario.html">rh.tests.test_demo_scenario</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_integration.html">rh.tests.test_integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_readme_examples.html">rh.tests.test_readme_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_runtime_smoke.html">rh.tests.test_runtime_smoke</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_serve_before_build.html">rh.tests.test_serve_before_build</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/util.html">rh.util</a></li>
 </ul>
@@ -112,8 +113,8 @@
     <span class="c1"># Test app name inference from title</span>
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
         <span class="c1"># Override environment variable for this test</span>
-        <span class="n">original_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RH_APP_FOLDER&#39;</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;RH_APP_FOLDER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmpdir</span>
+        <span class="n">original_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RH_APP_FOLDER&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;RH_APP_FOLDER&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmpdir</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Reload util to pick up env change</span>
@@ -144,9 +145,9 @@
         <span class="k">finally</span><span class="p">:</span>
             <span class="c1"># Restore original environment</span>
             <span class="k">if</span> <span class="n">original_env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;RH_APP_FOLDER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_env</span>
-            <span class="k">elif</span> <span class="s1">&#39;RH_APP_FOLDER&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;RH_APP_FOLDER&#39;</span><span class="p">]</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;RH_APP_FOLDER&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_env</span>
+            <span class="k">elif</span> <span class="s2">&quot;RH_APP_FOLDER&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;RH_APP_FOLDER&quot;</span><span class="p">]</span>
 
             <span class="c1"># Reload to reset to original state</span>
             <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">rh</span><span class="o">.</span><span class="n">util</span><span class="p">)</span></div>

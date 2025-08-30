@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rh.util &mdash; rh 0.0.7 documentation</title>
+  <title>rh.util &mdash; rh 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bbaf98b3"></script>
+      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -61,6 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_demo_scenario.html">rh.tests.test_demo_scenario</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_integration.html">rh.tests.test_integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_readme_examples.html">rh.tests.test_readme_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_runtime_smoke.html">rh.tests.test_runtime_smoke</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_serve_before_build.html">rh.tests.test_serve_before_build</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/util.html">rh.util</a></li>
 </ul>
@@ -101,10 +102,10 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">config2py</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_app_data_folder</span><span class="p">,</span> <span class="n">process_path</span>
 
-<span class="n">RH_LOCAL_DATA_FOLDER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RH_LOCAL_DATA_FOLDER&#39;</span><span class="p">,</span> <span class="n">get_app_data_folder</span><span class="p">(</span><span class="s1">&#39;rh&#39;</span><span class="p">))</span>
+<span class="n">RH_LOCAL_DATA_FOLDER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RH_LOCAL_DATA_FOLDER&quot;</span><span class="p">,</span> <span class="n">get_app_data_folder</span><span class="p">(</span><span class="s2">&quot;rh&quot;</span><span class="p">))</span>
 <span class="n">RH_LOCAL_DATA_FOLDER</span> <span class="o">=</span> <span class="n">process_path</span><span class="p">(</span><span class="n">RH_LOCAL_DATA_FOLDER</span><span class="p">,</span> <span class="n">ensure_dir_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">RH_APP_FOLDER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s1">&#39;RH_APP_FOLDER&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">RH_LOCAL_DATA_FOLDER</span><span class="p">,</span> <span class="s1">&#39;apps&#39;</span><span class="p">)</span>
+    <span class="s2">&quot;RH_APP_FOLDER&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">RH_LOCAL_DATA_FOLDER</span><span class="p">,</span> <span class="s2">&quot;apps&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">RH_APP_FOLDER</span> <span class="o">=</span> <span class="n">process_path</span><span class="p">(</span><span class="n">RH_APP_FOLDER</span><span class="p">,</span> <span class="n">ensure_dir_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -186,7 +187,7 @@
     <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_port</span><span class="p">,</span> <span class="n">start_port</span> <span class="o">+</span> <span class="mi">100</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-                <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
                 <span class="k">return</span> <span class="n">port</span>
         <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
             <span class="k">continue</span>
@@ -224,10 +225,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_auto_register</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Detect and register third-party tools automatically.&quot;&quot;&quot;</span>
         <span class="c1"># Try to register enhanced tools if available</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_package</span><span class="p">(</span><span class="s1">&#39;jinja2&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_package</span><span class="p">(</span><span class="s2">&quot;jinja2&quot;</span><span class="p">):</span>
             <span class="c1"># Would register Jinja2Handler if implemented</span>
             <span class="k">pass</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_package</span><span class="p">(</span><span class="s1">&#39;esbuild&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_package</span><span class="p">(</span><span class="s2">&quot;esbuild&quot;</span><span class="p">):</span>
             <span class="c1"># Would register ESBuildHandler if implemented</span>
             <span class="k">pass</span>
 

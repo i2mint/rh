@@ -17,5 +17,6 @@
    module_docs/rh/tests/test_demo_scenario
    module_docs/rh/tests/test_integration
    module_docs/rh/tests/test_readme_examples
+   module_docs/rh/tests/test_runtime_smoke
    module_docs/rh/tests/test_serve_before_build
    module_docs/rh/util

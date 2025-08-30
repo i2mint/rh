@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rh.core &mdash; rh 0.0.7 documentation</title>
+  <title>rh.core &mdash; rh 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bbaf98b3"></script>
+      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -61,6 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_demo_scenario.html">rh.tests.test_demo_scenario</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_integration.html">rh.tests.test_integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_readme_examples.html">rh.tests.test_readme_examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_runtime_smoke.html">rh.tests.test_runtime_smoke</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/tests/test_serve_before_build.html">rh.tests.test_serve_before_build</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/rh/util.html">rh.util</a></li>
 </ul>
@@ -236,7 +237,7 @@
                     <span class="p">{</span>
                         <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
                         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_overrides</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;ui:&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ui:&quot;</span><span class="p">)</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
 
@@ -280,9 +281,17 @@
 
         <span class="c1"># Check if this is a computed variable (has dependencies)</span>
         <span class="k">if</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="p">:</span>
-            <span class="c1"># This is a computed variable - make it readonly by default</span>
-            <span class="k">if</span> <span class="s2">&quot;ui:readonly&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ui_config</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">var_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;slider_&quot;</span><span class="p">):</span>
-                <span class="n">ui_config</span><span class="p">[</span><span class="s2">&quot;ui:readonly&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1"># If there is an explicit initial value for this computed variable,</span>
+            <span class="c1"># allow it to be editable (useful for bidirectional/demo cases).</span>
+            <span class="k">if</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values</span><span class="p">:</span>
+                <span class="c1"># keep it editable</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># This is a computed variable - make it readonly by default</span>
+                <span class="k">if</span> <span class="s2">&quot;ui:readonly&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ui_config</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">var_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                    <span class="s2">&quot;slider_&quot;</span>
+                <span class="p">):</span>
+                    <span class="n">ui_config</span><span class="p">[</span><span class="s2">&quot;ui:readonly&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">return</span> <span class="n">ui_config</span>
 
@@ -299,7 +308,7 @@
         <span class="n">js_functions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions_spec</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># For inline functions, wrap in function syntax</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">code</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;function&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">code</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">):</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[])</span>
                 <span class="n">func_code</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;function(</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">) </span><span class="se">{{</span><span class="s2"> </span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">&quot;</span>
             <span class="k">else</span><span class="p">:</span>
@@ -350,6 +359,8 @@
         <span class="n">serve</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8080</span><span class="p">,</span>
         <span class="n">app_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">embed_rjsf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">meta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate complete HTML app with all assets bundled.</span>
 
@@ -375,7 +386,10 @@
         <span class="n">output_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">html_generator</span> <span class="o">=</span> <span class="n">HTMLGenerator</span><span class="p">()</span>
-        <span class="n">html_content</span> <span class="o">=</span> <span class="n">html_generator</span><span class="o">.</span><span class="n">generate_app</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+        <span class="c1"># Attach meta information to config for generator to render descriptions</span>
+        <span class="k">if</span> <span class="n">meta</span><span class="p">:</span>
+            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span>
+        <span class="n">html_content</span> <span class="o">=</span> <span class="n">html_generator</span><span class="o">.</span><span class="n">generate_app</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">embed_rjsf</span><span class="o">=</span><span class="n">embed_rjsf</span><span class="p">)</span>
 
         <span class="n">app_file</span> <span class="o">=</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;index.html&quot;</span>
         <span class="n">app_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">html_content</span><span class="p">)</span>

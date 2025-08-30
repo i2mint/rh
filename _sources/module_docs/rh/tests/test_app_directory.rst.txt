@@ -1,0 +1,4 @@
+rh.tests.test_app_directory
+===========================
+.. automodule:: rh.tests.test_app_directory
+   :members:

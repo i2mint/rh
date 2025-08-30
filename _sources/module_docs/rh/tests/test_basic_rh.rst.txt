@@ -1,0 +1,4 @@
+rh.tests.test_basic_rh
+======================
+.. automodule:: rh.tests.test_basic_rh
+   :members:

@@ -1,0 +1,4 @@
+rh.generators.html
+==================
+.. automodule:: rh.generators.html
+   :members:

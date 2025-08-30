@@ -1,0 +1,21 @@
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   module_docs/rh
+   module_docs/rh/core
+   module_docs/rh/functions
+   module_docs/rh/generators
+   module_docs/rh/generators/html
+   module_docs/rh/spec
+   module_docs/rh/templates
+   module_docs/rh/tests
+   module_docs/rh/tests/test_advanced_rh
+   module_docs/rh/tests/test_app_building
+   module_docs/rh/tests/test_app_directory
+   module_docs/rh/tests/test_basic_rh
+   module_docs/rh/tests/test_demo_scenario
+   module_docs/rh/tests/test_integration
+   module_docs/rh/tests/test_readme_examples
+   module_docs/rh/tests/test_serve_before_build
+   module_docs/rh/util

@@ -1,0 +1,4 @@
+rh.tests.test_demo_scenario
+===========================
+.. automodule:: rh.tests.test_demo_scenario
+   :members:

@@ -1,0 +1,4 @@
+rh.tests.test_integration
+=========================
+.. automodule:: rh.tests.test_integration
+   :members:

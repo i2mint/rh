@@ -84,6 +84,7 @@ class HTMLGenerator:
     <div class="container-fluid">
         <div class="mesh-form-container">
             <h1>__TITLE__</h1>
+            <!-- DESCRIPTION_PLACEHOLDER -->
             <div id="rjsf-form"></div>
         </div>
     </div>
@@ -99,6 +100,7 @@ class HTMLGenerator:
         const schema = props.schema || {};
         const formData = props.formData || {};
         const onChange = props.onChange;
+    const onSubmit = props.onSubmit;
         const uiSchema = props.uiSchema || {};
 
         function createField(key, fieldSchema, value) {
@@ -137,7 +139,17 @@ class HTMLGenerator:
 
         const properties = (schema && schema.properties) || {};
         const fields = Object.keys(properties).map(function(key) { return createField(key, properties[key], formData[key]); });
-        return React.createElement('form', { className: 'simple-form' }, fields);
+
+        // Submit button
+        const submitButton = React.createElement('button', { type: 'submit', className: 'btn btn-primary' }, 'Submit');
+
+        // onSubmit handler to invoke provided onSubmit prop and prevent full page reload
+        function handleSubmit(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (onSubmit) onSubmit({ formData: formData });
+        }
+
+        return React.createElement('form', { className: 'simple-form', onSubmit: handleSubmit }, fields.concat([submitButton]));
     };
     </script>
 
@@ -376,7 +388,33 @@ try {
                 uiSchema: formConfig.uiSchema,
                 formData: formData,
                 onChange: onChange,
-                onSubmit: function(p) { console.log('Data submitted: ', p && p.formData); }
+                onSubmit: function(p) {
+                    try {
+                        var payload = p && p.formData ? p.formData : {};
+                        // Try to POST to a server endpoint if provided (optional)
+                        if (window.__rh_save_endpoint__) {
+                            try {
+                                fetch(window.__rh_save_endpoint__, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+                                  .then(function(resp){ console.log('Saved to endpoint', resp && resp.status); })
+                                  .catch(function(err){ console.warn('Endpoint save failed', err); });
+                            } catch (err) {
+                                console.warn('Endpoint save attempt failed', err);
+                            }
+                        }
+
+                        // Always offer a client-side download for portability
+                        var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));
+                        var dlAnchor = document.createElement('a');
+                        dlAnchor.setAttribute('href', dataStr);
+                        dlAnchor.setAttribute('download', 'rh_submission_' + Date.now() + '.json');
+                        document.body.appendChild(dlAnchor);
+                        dlAnchor.click();
+                        dlAnchor.remove();
+                        console.log('Data submitted and downloaded:', payload);
+                    } catch (err) {
+                        console.error('Error in onSubmit handler:', err);
+                    }
+                }
             });
             ReactDOM.render(element, document.getElementById('rjsf-form'));
             console.log('Form rendered successfully');

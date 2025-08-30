@@ -238,8 +238,13 @@ def main():
     print("🚀 RH Framework Demo - Reactive Html Builder")
     print("=" * 50)
 
-    parser = argparse.ArgumentParser(description='Generate RH demo apps')
-    parser.add_argument('--outdir', '-o', help='Write demo apps to this directory (creates subfolders), otherwise uses temp dirs', default=None)
+    parser = argparse.ArgumentParser(description="Generate RH demo apps")
+    parser.add_argument(
+        "--outdir",
+        "-o",
+        help="Write demo apps to this directory (creates subfolders), otherwise uses temp dirs",
+        default=None,
+    )
     args = parser.parse_args()
 
     try:
@@ -260,7 +265,7 @@ def main():
                 if dest.exists():
                     shutil.rmtree(dest)
                 shutil.copytree(app.parent, dest)
-                saved.append(dest / 'index.html')
+                saved.append(dest / "index.html")
             print(f"\nSaved demo apps to: {outdir}")
             print("\nGenerated apps:")
             for p in saved:

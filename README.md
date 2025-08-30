@@ -89,7 +89,8 @@ builder = MeshBuilder(mesh_spec, functions_spec,
 Run the test suite:
 
 ```bash
-python -m pytest tests/
+# Run pytest discovery from the project root (recommended)
+python -m pytest
 ```
 
 ## Demo

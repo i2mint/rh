@@ -18,8 +18,8 @@ def test_app_directory_naming():
     # Test app name inference from title
     with tempfile.TemporaryDirectory() as tmpdir:
         # Override environment variable for this test
-        original_env = os.environ.get('RH_APP_FOLDER')
-        os.environ['RH_APP_FOLDER'] = tmpdir
+        original_env = os.environ.get("RH_APP_FOLDER")
+        os.environ["RH_APP_FOLDER"] = tmpdir
 
         try:
             # Reload util to pick up env change
@@ -50,9 +50,9 @@ def test_app_directory_naming():
         finally:
             # Restore original environment
             if original_env is not None:
-                os.environ['RH_APP_FOLDER'] = original_env
-            elif 'RH_APP_FOLDER' in os.environ:
-                del os.environ['RH_APP_FOLDER']
+                os.environ["RH_APP_FOLDER"] = original_env
+            elif "RH_APP_FOLDER" in os.environ:
+                del os.environ["RH_APP_FOLDER"]
 
             # Reload to reset to original state
             importlib.reload(rh.util)

@@ -99,7 +99,7 @@ def main():
         import json
 
         config_match = re.search(
-            r'const meshConfig = ({.*?});', html_content, re.DOTALL
+            r"const meshConfig = ({.*?});", html_content, re.DOTALL
         )
         if config_match:
             config_obj = json.loads(config_match.group(1))
@@ -108,7 +108,7 @@ def main():
             print(f"    Reverse: {config_obj['reverseMesh']}")
 
         form_config_match = re.search(
-            r'const formConfig = ({.*?});', html_content, re.DOTALL
+            r"const formConfig = ({.*?});", html_content, re.DOTALL
         )
         if form_config_match:
             form_obj = json.loads(form_config_match.group(1))

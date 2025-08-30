@@ -183,9 +183,17 @@ class MeshBuilder:
 
         # Check if this is a computed variable (has dependencies)
         if var_name in self.mesh:
-            # This is a computed variable - make it readonly by default
-            if "ui:readonly" not in ui_config and not var_name.startswith("slider_"):
-                ui_config["ui:readonly"] = True
+            # If there is an explicit initial value for this computed variable,
+            # allow it to be editable (useful for bidirectional/demo cases).
+            if var_name in self.initial_values:
+                # keep it editable
+                pass
+            else:
+                # This is a computed variable - make it readonly by default
+                if "ui:readonly" not in ui_config and not var_name.startswith(
+                    "slider_"
+                ):
+                    ui_config["ui:readonly"] = True
 
         return ui_config
 
@@ -249,6 +257,7 @@ class MeshBuilder:
         port: int = 8080,
         app_name: Optional[str] = None,
         embed_rjsf: bool = False,
+        meta: Optional[Dict[str, Any]] = None,
     ) -> Path:
         """Generate complete HTML app with all assets bundled.
 
@@ -274,6 +283,9 @@ class MeshBuilder:
         output_path.mkdir(parents=True, exist_ok=True)
 
         html_generator = HTMLGenerator()
+        # Attach meta information to config for generator to render descriptions
+        if meta:
+            config["meta"] = meta
         html_content = html_generator.generate_app(config, title, embed_rjsf=embed_rjsf)
 
         app_file = output_path / "index.html"

@@ -48,7 +48,15 @@ def demo_temperature_converter():
         prefix="rh_temp_demo_"
     )  # Create persistent temp directory
     builder.output_dir = tmpdir  # Set output directory
-    app_path = builder.build_app(title="Temperature Converter")
+    meta = {
+        "description": "Convert temperatures between Celsius, Fahrenheit, Kelvin, and Rankine. Changing Celsius will update the others.",
+        "features": [
+            "Demonstrates one-to-many relationships",
+            "Shows type inference and initial values",
+            "Validates UI schema generation",
+        ],
+    }
+    app_path = builder.build_app(title="Temperature Converter", meta=meta)
 
     print(f"📱 App created at: {app_path}")
     print(f"📄 HTML size: {app_path.stat().st_size} bytes")
@@ -145,7 +153,15 @@ def demo_physics_calculator():
         prefix="rh_physics_demo_"
     )  # Create persistent temp directory
     builder.output_dir = tmpdir  # Set output directory
-    app_path = builder.build_app(title="Physics Calculator")
+    meta = {
+        "description": "Physics calculator: change mass, velocity, acceleration, and efficiency to compute kinetic energy, momentum, force, and derived ratios in real-time.",
+        "features": [
+            "Shows computed variables updated from inputs",
+            "Demonstrates slider and readonly UI conventions",
+            "Mesh propagation with dependency ordering",
+        ],
+    }
+    app_path = builder.build_app(title="Physics Calculator", meta=meta)
     print(f"📱 Physics app created at: {app_path}")
 
     return app_path
@@ -201,7 +217,15 @@ def demo_bidirectional_conversion():
         prefix="rh_currency_demo_"
     )  # Create persistent temp directory
     builder.output_dir = tmpdir  # Set output directory
-    app_path = builder.build_app(title="Currency Converter")
+    meta = {
+        "description": "Bidirectional currency converter with USD/EUR/GBP demonstrating cycles and portfolio aggregation. Try editing USD or EUR to see propagation.",
+        "features": [
+            "Demonstrates cycles / bidirectional relationships",
+            "Shows detection and safe propagation ordering",
+            "Readonly fields and field overrides",
+        ],
+    }
+    app_path = builder.build_app(title="Currency Converter", meta=meta)
     print(f"💱 Currency converter created at: {app_path}")
 
     return app_path

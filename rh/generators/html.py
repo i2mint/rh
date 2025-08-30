@@ -39,10 +39,19 @@ class HTMLGenerator:
             # Use a reasonably-versioned CDN as default
             vendor_tag = '<script src="https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js"></script>'
 
-        # Build mesh functions JS (functions are user-provided JS snippets in some use-cases).
-        # For safety, if functions are not provided, use an empty object.
-        mesh_functions_obj = config.get("functions") or {}
-        mesh_functions = f"const meshFunctions = {json.dumps(mesh_functions_obj)};"
+        # Build mesh functions JS. The MeshBuilder._resolve_functions currently
+        # returns a JS string like 'const meshFunctions = {...};' — preserve that
+        # if present. If config provides a dict, JSON-encode it.
+        mesh_functions_val = config.get("functions") or "{}"
+        if isinstance(
+            mesh_functions_val, str
+        ) and mesh_functions_val.strip().startswith("const"):
+            mesh_functions = mesh_functions_val
+        elif isinstance(mesh_functions_val, str):
+            # string but not a JS bundle - treat as inline JS body
+            mesh_functions = f"const meshFunctions = {{{mesh_functions_val}}};"
+        else:
+            mesh_functions = f"const meshFunctions = {json.dumps(mesh_functions_val)};"
 
         # Build mesh config JS (mesh + reverseMesh)
         mesh = config.get("mesh") or {}
@@ -167,12 +176,27 @@ class HTMLGenerator:
 </html>
 """
 
+        # Add a demo description area populated from config.meta if available
+        demo_meta = config.get("meta", {}) if isinstance(config, dict) else {}
+        description_html = ""
+        if demo_meta:
+            desc = demo_meta.get("description") or demo_meta.get("summary") or ""
+            features = demo_meta.get("features") or []
+            if desc:
+                description_html += f"<p>{desc}</p>"
+            if features:
+                description_html += "<ul>"
+                for f in features:
+                    description_html += f"<li>{f}</li>"
+                description_html += "</ul>"
+
         html = (
             template.replace("__TITLE__", title)
             .replace("__VENDOR_SCRIPT_TAG__", vendor_tag)
             .replace("__MESH_FUNCTIONS__", mesh_functions)
             .replace("__MESH_PROPAGATOR__", mesh_propagator)
             .replace("__APP_INITIALIZATION__", app_initialization)
+            .replace("<!-- DESCRIPTION_PLACEHOLDER -->", description_html)
         )
 
         return html

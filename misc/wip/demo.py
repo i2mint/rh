@@ -189,6 +189,8 @@ def demo_bidirectional_conversion():
     }
 
     initial_values = {"amount_usd": 1000.0}
+    # Provide an initial EUR value to allow bidirectional editing and type inference
+    initial_values.setdefault('amount_eur', initial_values['amount_usd'] * 0.85)
 
     field_overrides = {
         "amount_usd": {"title": "USD Amount", "ui:help": "Amount in US Dollars"},

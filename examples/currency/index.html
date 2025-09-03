@@ -15,7 +15,7 @@
     <div class="container-fluid">
         <div class="mesh-form-container">
             <h1>Currency Converter</h1>
-            <p>Bidirectional currency converter with USD/EUR/GBP demonstrating cycles and portfolio aggregation. Try editing USD or EUR to see propagation.</p><ul><li>Demonstrates cycles / bidirectional relationships</li><li>Shows detection and safe propagation ordering</li><li>Readonly fields and field overrides</li></ul>
+            <p>test</p>
             <div id="rjsf-form"></div>
         </div>
     </div>
@@ -117,37 +117,31 @@
     }
 
     propagate(changedVariable, newValue, formData) {
+        // Use a fixed-point iteration over all functions to handle cycles.
         const newFormData = {...formData, [changedVariable]: newValue};
-        const computed = new Set();
-        const queue = [...(this.reverseMesh[changedVariable] || [])];
-
-        while (queue.length > 0) {
-            const funcName = queue.shift();
-
-            if (computed.has(funcName)) {
-                console.error(`Cyclic computation detected: ${funcName}`);
-                throw new Error(`Cyclic computation detected: ${funcName}`);
-            }
-
-            computed.add(funcName);
-            const args = this.mesh[funcName] || [];
-
-            try {
-                const argValues = args.map(arg => newFormData[arg]);
-                const result = (this.functions && typeof this.functions[funcName] === 'function') ? this.functions[funcName](...argValues) : undefined;
-
-                if (result !== undefined && newFormData[funcName] !== result) {
-                    newFormData[funcName] = result;
-
-                    if (this.reverseMesh[funcName]) {
-                        queue.push(...this.reverseMesh[funcName].filter(f => !computed.has(f)));
+        const maxIter = 50;
+        for (let iter = 0; iter < maxIter; ++iter) {
+            let anyChange = false;
+            for (const funcName of Object.keys(this.mesh)) {
+                try {
+                    const args = this.mesh[funcName] || [];
+                    const argValues = args.map(arg => newFormData[arg]);
+                    const fn = (this.functions && typeof this.functions[funcName] === 'function') ? this.functions[funcName] : undefined;
+                    if (!fn) continue;
+                    const result = fn(...argValues);
+                    if (result === undefined) continue;
+                    // Never overwrite the directly edited variable in this propagation.
+                    if (funcName === changedVariable) continue;
+                    if (newFormData[funcName] !== result) {
+                        newFormData[funcName] = result;
+                        anyChange = true;
                     }
+                } catch (err) {
+                    console.error('Error computing ' + funcName + ':', err);
                 }
-            } catch (error) {
-                console.error(`Error computing ${funcName}:`, error);
             }
+            if (!anyChange) break;
         }
-
         return newFormData;
     }
 
@@ -242,14 +236,19 @@ try {
 
     console.log('Form component type:', typeof FormComponent);
 
-    const formConfig = {"schema": {"type": "object", "properties": {"amount_gbp": {"type": "number", "title": "GBP Amount", "ui:help": "Amount in British Pounds"}, "amount_eur": {"type": "number", "title": "EUR Amount", "ui:help": "Amount in Euros"}, "total_portfolio": {"type": "number", "title": "Total Portfolio (USD equivalent)", "ui:readonly": true}, "amount_usd": {"type": "number", "title": "USD Amount", "ui:help": "Amount in US Dollars"}}, "required": []}, "uiSchema": {"amount_gbp": {"ui:readonly": true, "ui:help": "Amount in British Pounds"}, "amount_eur": {"ui:readonly": true, "ui:help": "Amount in Euros"}, "total_portfolio": {"ui:readonly": true}, "amount_usd": {"ui:help": "Amount in US Dollars"}}, "formData": {"amount_usd": 1000.0}};
+    const formConfig = {"schema": {"type": "object", "properties": {"amount_gbp": {"type": "number"}, "total_portfolio": {"type": "number"}, "amount_usd": {"type": "number"}, "amount_eur": {"type": "number"}}, "required": []}, "uiSchema": {"amount_gbp": {"ui:readonly": true}, "total_portfolio": {"ui:readonly": true}}, "formData": {"amount_usd": 1000.0, "amount_eur": 850.0}};
 
     var onChange = function(e) {
         try {
             var formData = e && e.formData ? e.formData : {};
+            // DEBUG: log incoming formData keys/values for visibility when editing
+            try { console.log('onChange received formData:', JSON.stringify(formData)); } catch (err) { console.log('onChange received formData (unserializable)'); }
             Object.keys(formData).forEach(function(key) {
+                // DEBUG: log which key we're considering
+                console.log('onChange key:', key, 'value:', formData[key]);
                 if (meshPropagator.reverseMesh && meshPropagator.reverseMesh[key]) {
                     var newFormData = meshPropagator.propagate(key, formData[key], formData);
+                    try { console.log('propagate result for', key, JSON.stringify(newFormData)); } catch (err) { console.log('propagate result (unserializable) for', key); }
                     if (JSON.stringify(newFormData) !== JSON.stringify(formData)) {
                         renderForm(newFormData);
                     }

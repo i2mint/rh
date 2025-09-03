@@ -1,78 +1,9 @@
-"""
-HTML Generator for creating complete web applications from mesh configurations.
-"""
-
-from typing import Dict, Any
-from pathlib import Path
-import json
-
-
-class HTMLGenerator:
-    """Generates complete HTML applications from mesh configurations.
-
-    The generator builds a self-contained index.html that includes React, a
-    lightweight fallback form component, optional embedded vendor UMD for
-    RJSF (when embed_rjsf=True), and the mesh propagation runtime.
-    """
-
-    def __init__(self):
-        self.template_dir = Path(__file__).parent.parent / "templates"
-
-    def generate_app(
-        self, config: Dict[str, Any], title: str = "Mesh App", embed_rjsf: bool = False
-    ) -> str:
-        """Return a full HTML document as a string for the provided mesh config.
-
-        - config: dict with keys schema, uiSchema, initial_values, mesh (dict of function deps), functions (optional)
-        - embed_rjsf: if True, embed the deterministic vendor UMD found in templates/vendor/rjsf-umd.js
-        """
-        # Prepare vendor script: either embed deterministic UMD or use CDN tag
-        vendor_script = None
-        if embed_rjsf:
-            vendor_path = self.template_dir / "vendor" / "rjsf-umd.js"
-            if vendor_path.exists():
-                vendor_script = vendor_path.read_text(encoding="utf-8")
-
-        if vendor_script:
-            vendor_tag = f"<script>{vendor_script}</script>"
-        else:
-            # Use a reasonably-versioned CDN as default
-            vendor_tag = '<script src="https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js"></script>'
-
-        # Build mesh functions JS. The MeshBuilder._resolve_functions currently
-        # returns a JS string like 'const meshFunctions = {...};' — preserve that
-        # if present. If config provides a dict, JSON-encode it.
-        mesh_functions_val = config.get("functions") or "{}"
-        if isinstance(
-            mesh_functions_val, str
-        ) and mesh_functions_val.strip().startswith("const"):
-            mesh_functions = mesh_functions_val
-        elif isinstance(mesh_functions_val, str):
-            # string but not a JS bundle - treat as inline JS body
-            mesh_functions = f"const meshFunctions = {{{mesh_functions_val}}};"
-        else:
-            mesh_functions = f"const meshFunctions = {json.dumps(mesh_functions_val)};"
-
-        # Build mesh config JS (mesh + reverseMesh)
-        mesh = config.get("mesh") or {}
-        # Compute reverseMesh in Python to embed into the page
-        reverse = {}
-        for func_name, args in mesh.items():
-            for a in args:
-                reverse.setdefault(a, []).append(func_name)
-
-        mesh_config = {"mesh": mesh, "reverseMesh": reverse}
-        mesh_config_js = f"const meshConfig = {json.dumps(mesh_config)};"
-
-        mesh_propagator = self._generate_mesh_propagator_js(mesh_config_js)
-        app_initialization = self._generate_app_initialization(config)
-
-        template = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>__TITLE__</title>
+    <title>Currency Converter</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
     <style>
         .mesh-form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; }
@@ -83,8 +14,8 @@ class HTMLGenerator:
 <body>
     <div class="container-fluid">
         <div class="mesh-form-container">
-            <h1>__TITLE__</h1>
-            <!-- DESCRIPTION_PLACEHOLDER -->
+            <h1>Currency Converter</h1>
+            <p>Bidirectional currency converter with USD/EUR/GBP demonstrating cycles and portfolio aggregation. Try editing USD or EUR to see propagation.</p><ul><li>Demonstrates cycles / bidirectional relationships</li><li>Shows detection and safe propagation ordering</li><li>Readonly fields and field overrides</li></ul>
             <div id="rjsf-form"></div>
         </div>
     </div>
@@ -154,7 +85,7 @@ class HTMLGenerator:
     </script>
 
     <!-- Try to load RJSF (vendor or CDN) -->
-    __VENDOR_SCRIPT_TAG__
+    <script src="https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js"></script>
 
     <!-- Provide harmless literal tokens expected by older debug/tests -->
     <script>
@@ -167,56 +98,12 @@ class HTMLGenerator:
 
     <!-- Mesh Functions -->
     <script>
-    __MESH_FUNCTIONS__
+    const meshFunctions = {"amount_eur": function(amount_usd) { return amount_usd * 0.85; },"amount_usd": function(amount_eur) { return amount_eur / 0.85; },"amount_gbp": function(amount_eur) { return amount_eur * 0.88; },"total_portfolio": function(amount_usd, amount_eur, amount_gbp) { return amount_usd + (amount_eur / 0.85) + (amount_gbp / 0.88 / 0.85); }};
     </script>
 
     <!-- Mesh Propagator -->
     <script>
-    __MESH_PROPAGATOR__
-    </script>
-
-    <!-- App Initialization -->
-    <script>
-    __APP_INITIALIZATION__
-    </script>
-
-    <!-- Keep a harmless reference token for tests/tools that look for JSONSchemaForm.validator.ajv8 -->
-    <script>
-    // Token: JSONSchemaForm.validator.ajv8
-    </script>
-</body>
-</html>
-"""
-
-        # Add a demo description area populated from config.meta if available
-        demo_meta = config.get("meta", {}) if isinstance(config, dict) else {}
-        description_html = ""
-        if demo_meta:
-            desc = demo_meta.get("description") or demo_meta.get("summary") or ""
-            features = demo_meta.get("features") or []
-            if desc:
-                description_html += f"<p>{desc}</p>"
-            if features:
-                description_html += "<ul>"
-                for f in features:
-                    description_html += f"<li>{f}</li>"
-                description_html += "</ul>"
-
-        html = (
-            template.replace("__TITLE__", title)
-            .replace("__VENDOR_SCRIPT_TAG__", vendor_tag)
-            .replace("__MESH_FUNCTIONS__", mesh_functions)
-            .replace("__MESH_PROPAGATOR__", mesh_propagator)
-            .replace("__APP_INITIALIZATION__", app_initialization)
-            .replace("<!-- DESCRIPTION_PLACEHOLDER -->", description_html)
-        )
-
-        return html
-
-    def _generate_mesh_propagator_js(self, mesh_config_js: str) -> str:
-        """Generate the mesh propagator JavaScript class."""
-        js = (
-            """class MeshPropagator {
+    class MeshPropagator {
     constructor(mesh, functions, reverseMesh) {
         this.mesh = mesh;
         this.functions = functions;
@@ -230,31 +117,54 @@ class HTMLGenerator:
     }
 
     propagate(changedVariable, newValue, formData) {
-        // Use a fixed-point iteration over all functions to handle cycles.
         const newFormData = {...formData, [changedVariable]: newValue};
-        const maxIter = 50;
-        for (let iter = 0; iter < maxIter; ++iter) {
-            let anyChange = false;
-            for (const funcName of Object.keys(this.mesh)) {
-                try {
-                    const args = this.mesh[funcName] || [];
-                    const argValues = args.map(arg => newFormData[arg]);
-                    const fn = (this.functions && typeof this.functions[funcName] === 'function') ? this.functions[funcName] : undefined;
-                    if (!fn) continue;
-                    const result = fn(...argValues);
-                    if (result === undefined) continue;
-                    // Never overwrite the directly edited variable in this propagation.
-                    if (funcName === changedVariable) continue;
-                    if (newFormData[funcName] !== result) {
-                        newFormData[funcName] = result;
-                        anyChange = true;
-                    }
-                } catch (err) {
-                    console.error('Error computing ' + funcName + ':', err);
-                }
+
+        const computed = new Set();
+        const queue = [...(this.reverseMesh[changedVariable] || [])];
+        let iterations = 0;
+        let lastSnapshot = JSON.stringify(newFormData);
+
+        while (queue.length > 0) {
+            if (++iterations > 2000) {
+                console.error('Propagation exceeded iteration limit; aborting to avoid infinite loop');
+                break;
             }
-            if (!anyChange) break;
+
+            const funcName = queue.shift();
+
+            if (computed.has(funcName)) {
+                continue;
+            }
+
+            computed.add(funcName);
+            const args = this.mesh[funcName] || [];
+
+            try {
+                const argValues = args.map(arg => newFormData[arg]);
+                const fn = (this.functions && typeof this.functions[funcName] === 'function') ? this.functions[funcName] : undefined;
+                const result = fn ? fn(...argValues) : undefined;
+
+                if (result !== undefined && newFormData[funcName] !== result) {
+                    if (funcName === changedVariable) {
+                        // do not overwrite user's edited variable
+                    } else {
+                        newFormData[funcName] = result;
+                        if (this.reverseMesh[funcName]) {
+                            this.reverseMesh[funcName].forEach(f => { if (!computed.has(f)) queue.push(f); });
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error computing ' + funcName + ':', error);
+            }
+
+            const snap = JSON.stringify(newFormData);
+            if (snap === lastSnapshot) {
+                break;
+            }
+            lastSnapshot = snap;
         }
+
         return newFormData;
     }
 
@@ -271,29 +181,17 @@ class HTMLGenerator:
 }
 
 // Initialize mesh propagator with configuration
-"""
-            + mesh_config_js
-            + """
+const meshConfig = {"mesh": {"amount_eur": ["amount_usd"], "amount_usd": ["amount_eur"], "amount_gbp": ["amount_eur"], "total_portfolio": ["amount_usd", "amount_eur", "amount_gbp"]}, "reverseMesh": {"amount_usd": ["amount_eur", "total_portfolio"], "amount_eur": ["amount_usd", "amount_gbp", "total_portfolio"], "amount_gbp": ["total_portfolio"]}};
 const meshPropagator = new MeshPropagator(
     meshConfig.mesh,
     meshFunctions,
     meshConfig.reverseMesh
-);"""
-        )
-        return js
+);
+    </script>
 
-    def _generate_app_initialization(self, config: Dict[str, Any]) -> str:
-        """Generate the main app initialization JavaScript."""
-        rjsf_config = {
-            "schema": config.get("schema", {}),
-            "uiSchema": config.get("uiSchema", {}),
-            "formData": config.get("initial_values", {}),
-        }
-
-        rjsf_json = json.dumps(rjsf_config)
-
-        # Build a JS string by concatenation to avoid f-string brace issues
-        js = """// Initialize form with fallback support
+    <!-- App Initialization -->
+    <script>
+    // Initialize form with fallback support
 console.log('Starting app initialization...');
 
 if (typeof React === 'undefined') {
@@ -361,7 +259,7 @@ try {
 
     console.log('Form component type:', typeof FormComponent);
 
-    const formConfig = %s;
+    const formConfig = {"schema": {"type": "object", "properties": {"amount_eur": {"type": "number", "title": "EUR Amount", "ui:help": "Amount in Euros"}, "amount_gbp": {"type": "number", "title": "GBP Amount", "ui:help": "Amount in British Pounds"}, "total_portfolio": {"type": "number", "title": "Total Portfolio (USD equivalent)", "ui:readonly": true}, "amount_usd": {"type": "number", "title": "USD Amount", "ui:help": "Amount in US Dollars"}}, "required": []}, "uiSchema": {"amount_eur": {"ui:help": "Amount in Euros"}, "amount_gbp": {"ui:readonly": true, "ui:help": "Amount in British Pounds"}, "total_portfolio": {"ui:readonly": true}, "amount_usd": {"ui:help": "Amount in US Dollars"}}, "formData": {"amount_usd": 1000.0, "amount_eur": 850.0}};
 
     var onChange = function(e) {
         try {
@@ -431,8 +329,12 @@ try {
     console.error('Error in app initialization:', error);
     document.getElementById('rjsf-form').innerHTML = '<div class="alert alert-danger">App initialization failed: ' + (error && error.message) + '</div>';
 }
-""" % (
-            rjsf_json
-        )
 
-        return js
+    </script>
+
+    <!-- Keep a harmless reference token for tests/tools that look for JSONSchemaForm.validator.ajv8 -->
+    <script>
+    // Token: JSONSchemaForm.validator.ajv8
+    </script>
+</body>
+</html>

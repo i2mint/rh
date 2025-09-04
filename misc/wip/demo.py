@@ -190,7 +190,7 @@ def demo_bidirectional_conversion():
 
     initial_values = {"amount_usd": 1000.0}
     # Provide an initial EUR value to allow bidirectional editing and type inference
-    initial_values.setdefault('amount_eur', initial_values['amount_usd'] * 0.85)
+    initial_values.setdefault("amount_eur", initial_values["amount_usd"] * 0.85)
 
     field_overrides = {
         "amount_usd": {"title": "USD Amount", "ui:help": "Amount in US Dollars"},
@@ -240,11 +240,11 @@ def main():
     print("🚀 RH Framework Demo - Reactive Html Builder")
     print("=" * 50)
 
-    parser = argparse.ArgumentParser(description='Generate RH demo apps')
+    parser = argparse.ArgumentParser(description="Generate RH demo apps")
     parser.add_argument(
-        '--outdir',
-        '-o',
-        help='Write demo apps to this directory (creates subfolders), otherwise uses temp dirs',
+        "--outdir",
+        "-o",
+        help="Write demo apps to this directory (creates subfolders), otherwise uses temp dirs",
         default=None,
     )
     args = parser.parse_args()

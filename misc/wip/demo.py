@@ -267,7 +267,7 @@ def main():
                 if dest.exists():
                     shutil.rmtree(dest)
                 shutil.copytree(app.parent, dest)
-                saved.append(dest / 'index.html')
+                saved.append(dest / "index.html")
             print(f"\nSaved demo apps to: {outdir}")
             print("\nGenerated apps:")
             for p in saved:

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rh.generators.html &mdash; rh 0.0.8 documentation</title>
+  <title>rh.generators.html &mdash; rh 0.0.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../../_static/documentation_options.js?v=f7cdbf68"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -313,73 +313,72 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_mesh_propagator_js</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh_config_js</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the mesh propagator JavaScript class.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;class MeshPropagator </span><span class="se">{{</span>
-<span class="s2">    constructor(mesh, functions, reverseMesh) </span><span class="se">{{</span>
-<span class="s2">        this.mesh = mesh;</span>
-<span class="s2">        this.functions = functions;</span>
-<span class="s2">        this.reverseMesh = reverseMesh;</span>
-<span class="s2">    </span><span class="se">}}</span>
+        <span class="n">js</span> <span class="o">=</span> <span class="p">(</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;class MeshPropagator {</span>
+<span class="sd">    constructor(mesh, functions, reverseMesh) {</span>
+<span class="sd">        this.mesh = mesh;</span>
+<span class="sd">        this.functions = functions;</span>
+<span class="sd">        this.reverseMesh = reverseMesh;</span>
+<span class="sd">    }</span>
 
-<span class="s2">    createCallback(changedVariable) </span><span class="se">{{</span>
-<span class="s2">        return (value, formData) =&gt; </span><span class="se">{{</span>
-<span class="s2">            return this.propagate(changedVariable, value, formData);</span>
-<span class="s2">        </span><span class="se">}}</span><span class="s2">;</span>
-<span class="s2">    </span><span class="se">}}</span>
+<span class="sd">    createCallback(changedVariable) {</span>
+<span class="sd">        return (value, formData) =&gt; {</span>
+<span class="sd">            return this.propagate(changedVariable, value, formData);</span>
+<span class="sd">        };</span>
+<span class="sd">    }</span>
 
-<span class="s2">    propagate(changedVariable, newValue, formData) </span><span class="se">{{</span>
-<span class="s2">        const newFormData = </span><span class="se">{{</span><span class="s2">...formData, [changedVariable]: newValue</span><span class="se">}}</span><span class="s2">;</span>
-<span class="s2">        const computed = new Set();</span>
-<span class="s2">        const queue = [...(this.reverseMesh[changedVariable] || [])];</span>
+<span class="sd">    propagate(changedVariable, newValue, formData) {</span>
+<span class="sd">        // Use a fixed-point iteration over all functions to handle cycles.</span>
+<span class="sd">        const newFormData = {...formData, [changedVariable]: newValue};</span>
+<span class="sd">        const maxIter = 50;</span>
+<span class="sd">        for (let iter = 0; iter &lt; maxIter; ++iter) {</span>
+<span class="sd">            let anyChange = false;</span>
+<span class="sd">            for (const funcName of Object.keys(this.mesh)) {</span>
+<span class="sd">                try {</span>
+<span class="sd">                    const args = this.mesh[funcName] || [];</span>
+<span class="sd">                    const argValues = args.map(arg =&gt; newFormData[arg]);</span>
+<span class="sd">                    const fn = (this.functions &amp;&amp; typeof this.functions[funcName] === &#39;function&#39;) ? this.functions[funcName] : undefined;</span>
+<span class="sd">                    if (!fn) continue;</span>
+<span class="sd">                    const result = fn(...argValues);</span>
+<span class="sd">                    if (result === undefined) continue;</span>
+<span class="sd">                    // Never overwrite the directly edited variable in this propagation.</span>
+<span class="sd">                    if (funcName === changedVariable) continue;</span>
+<span class="sd">                    if (newFormData[funcName] !== result) {</span>
+<span class="sd">                        newFormData[funcName] = result;</span>
+<span class="sd">                        anyChange = true;</span>
+<span class="sd">                    }</span>
+<span class="sd">                } catch (err) {</span>
+<span class="sd">                    console.error(&#39;Error computing &#39; + funcName + &#39;:&#39;, err);</span>
+<span class="sd">                }</span>
+<span class="sd">            }</span>
+<span class="sd">            if (!anyChange) break;</span>
+<span class="sd">        }</span>
+<span class="sd">        return newFormData;</span>
+<span class="sd">    }</span>
 
-<span class="s2">        while (queue.length &gt; 0) </span><span class="se">{{</span>
-<span class="s2">            const funcName = queue.shift();</span>
+<span class="sd">    buildReverse(mesh) {</span>
+<span class="sd">        const reverse = {};</span>
+<span class="sd">        for (const [funcName, argNames] of Object.entries(mesh)) {</span>
+<span class="sd">            for (const argName of argNames) {</span>
+<span class="sd">                if (!reverse[argName]) { reverse[argName] = []; }</span>
+<span class="sd">                reverse[argName].push(funcName);</span>
+<span class="sd">            }</span>
+<span class="sd">        }</span>
+<span class="sd">        return reverse;</span>
+<span class="sd">    }</span>
+<span class="sd">}</span>
 
-<span class="s2">            if (computed.has(funcName)) </span><span class="se">{{</span>
-<span class="s2">                console.error(`Cyclic computation detected: $</span><span class="se">{{</span><span class="s2">funcName</span><span class="se">}}</span><span class="s2">`);</span>
-<span class="s2">                throw new Error(`Cyclic computation detected: $</span><span class="se">{{</span><span class="s2">funcName</span><span class="se">}}</span><span class="s2">`);</span>
-<span class="s2">            </span><span class="se">}}</span>
-
-<span class="s2">            computed.add(funcName);</span>
-<span class="s2">            const args = this.mesh[funcName] || [];</span>
-
-<span class="s2">            try </span><span class="se">{{</span>
-<span class="s2">                const argValues = args.map(arg =&gt; newFormData[arg]);</span>
-<span class="s2">                const result = (this.functions &amp;&amp; typeof this.functions[funcName] === &#39;function&#39;) ? this.functions[funcName](...argValues) : undefined;</span>
-
-<span class="s2">                if (result !== undefined &amp;&amp; newFormData[funcName] !== result) </span><span class="se">{{</span>
-<span class="s2">                    newFormData[funcName] = result;</span>
-
-<span class="s2">                    if (this.reverseMesh[funcName]) </span><span class="se">{{</span>
-<span class="s2">                        queue.push(...this.reverseMesh[funcName].filter(f =&gt; !computed.has(f)));</span>
-<span class="s2">                    </span><span class="se">}}</span>
-<span class="s2">                </span><span class="se">}}</span>
-<span class="s2">            </span><span class="se">}}</span><span class="s2"> catch (error) </span><span class="se">{{</span>
-<span class="s2">                console.error(`Error computing $</span><span class="se">{{</span><span class="s2">funcName</span><span class="se">}}</span><span class="s2">:`, error);</span>
-<span class="s2">            </span><span class="se">}}</span>
-<span class="s2">        </span><span class="se">}}</span>
-
-<span class="s2">        return newFormData;</span>
-<span class="s2">    </span><span class="se">}}</span>
-
-<span class="s2">    buildReverse(mesh) </span><span class="se">{{</span>
-<span class="s2">        const reverse = </span><span class="se">{{}}</span><span class="s2">;</span>
-<span class="s2">        for (const [funcName, argNames] of Object.entries(mesh)) </span><span class="se">{{</span>
-<span class="s2">            for (const argName of argNames) </span><span class="se">{{</span>
-<span class="s2">                if (!reverse[argName]) </span><span class="se">{{</span><span class="s2"> reverse[argName] = []; </span><span class="se">}}</span>
-<span class="s2">                reverse[argName].push(funcName);</span>
-<span class="s2">            </span><span class="se">}}</span>
-<span class="s2">        </span><span class="se">}}</span>
-<span class="s2">        return reverse;</span>
-<span class="s2">    </span><span class="se">}}</span>
-<span class="se">}}</span>
-
-<span class="s2">// Initialize mesh propagator with configuration</span>
-<span class="si">{</span><span class="n">mesh_config_js</span><span class="si">}</span>
+<span class="sd">// Initialize mesh propagator with configuration</span>
+<span class="sd">&quot;&quot;&quot;</span>
+            <span class="o">+</span> <span class="n">mesh_config_js</span>
+            <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">const meshPropagator = new MeshPropagator(</span>
 <span class="s2">    meshConfig.mesh,</span>
 <span class="s2">    meshFunctions,</span>
 <span class="s2">    meshConfig.reverseMesh</span>
 <span class="s2">);&quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">js</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_app_initialization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the main app initialization JavaScript.&quot;&quot;&quot;</span>

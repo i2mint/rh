@@ -7,9 +7,11 @@ import socketserver
 import os
 from pathlib import Path
 
-from config2py import get_app_data_folder, process_path
+from config2py import get_app_config_folder, process_path
 
-RH_LOCAL_DATA_FOLDER = os.environ.get("RH_LOCAL_DATA_FOLDER", get_app_data_folder("rh"))
+RH_LOCAL_DATA_FOLDER = os.environ.get(
+    "RH_LOCAL_DATA_FOLDER", get_app_config_folder("rh")
+)
 RH_LOCAL_DATA_FOLDER = process_path(RH_LOCAL_DATA_FOLDER, ensure_dir_exists=True)
 RH_APP_FOLDER = os.environ.get(
     "RH_APP_FOLDER", os.path.join(RH_LOCAL_DATA_FOLDER, "apps")

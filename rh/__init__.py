@@ -17,6 +17,7 @@ from .utils import (
     debug_mesh,
     get_execution_order,
 )
+from .testing import MeshTester, quick_test
 
 __all__ = [
     "MeshBuilder",
@@ -29,4 +30,6 @@ __all__ = [
     "generate_mesh_graph_dot",
     "debug_mesh",
     "get_execution_order",
+    "MeshTester",
+    "quick_test",
 ]

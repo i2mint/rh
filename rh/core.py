@@ -286,6 +286,9 @@ class MeshBuilder:
         app_name: Optional[str] = None,
         embed_rjsf: bool = False,
         embed_react: bool = False,
+        enable_autosave: bool = True,
+        enable_export: bool = True,
+        enable_url_state: bool = True,
         meta: Optional[Dict[str, Any]] = None,
     ) -> Path:
         """Generate complete HTML app with all assets bundled.
@@ -297,6 +300,9 @@ class MeshBuilder:
             app_name: Name for the app (used for directory if output_dir not set)
             embed_rjsf: Whether to embed RJSF library instead of loading from CDN
             embed_react: Whether to embed React/ReactDOM instead of loading from CDN
+            enable_autosave: Enable automatic state saving to localStorage
+            enable_export: Enable export/import state buttons
+            enable_url_state: Enable URL hash state persistence
 
         Returns:
             Path to the generated HTML file
@@ -317,7 +323,15 @@ class MeshBuilder:
         # Attach meta information to config for generator to render descriptions
         if meta:
             config["meta"] = meta
-        html_content = html_generator.generate_app(config, title, embed_rjsf=embed_rjsf, embed_react=embed_react)
+        html_content = html_generator.generate_app(
+            config,
+            title,
+            embed_rjsf=embed_rjsf,
+            embed_react=embed_react,
+            enable_autosave=enable_autosave,
+            enable_export=enable_export,
+            enable_url_state=enable_url_state,
+        )
 
         app_file = output_path / "index.html"
         app_file.write_text(html_content)

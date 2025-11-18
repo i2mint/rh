@@ -19,13 +19,23 @@ class HTMLGenerator:
         self.template_dir = Path(__file__).parent.parent / "templates"
 
     def generate_app(
-        self, config: Dict[str, Any], title: str = "Mesh App", embed_rjsf: bool = False, embed_react: bool = False
+        self,
+        config: Dict[str, Any],
+        title: str = "Mesh App",
+        embed_rjsf: bool = False,
+        embed_react: bool = False,
+        enable_autosave: bool = True,
+        enable_export: bool = True,
+        enable_url_state: bool = True,
     ) -> str:
         """Return a full HTML document as a string for the provided mesh config.
 
         - config: dict with keys schema, uiSchema, initial_values, mesh (dict of function deps), functions (optional)
         - embed_rjsf: if True, embed the deterministic vendor UMD found in templates/vendor/rjsf-umd.js
         - embed_react: if True, embed React and ReactDOM from templates/vendor/ for offline use
+        - enable_autosave: if True, auto-save form state to localStorage
+        - enable_export: if True, add export/import state buttons
+        - enable_url_state: if True, persist state in URL hash
         """
         # Prepare React script tags: either embed from vendor or use CDN
         if embed_react:
@@ -82,8 +92,19 @@ class HTMLGenerator:
         mesh_config = {"mesh": mesh, "reverseMesh": reverse}
         mesh_config_js = f"const meshConfig = {json.dumps(mesh_config)};"
 
+        # Generate app name for state management
+        app_name = title.lower().replace(" ", "_").replace("-", "_")
+
         mesh_propagator = self._generate_mesh_propagator_js(mesh_config_js)
-        app_initialization = self._generate_app_initialization(config)
+        state_management_js = self._generate_state_management_js(
+            app_name, enable_autosave, enable_export, enable_url_state
+        )
+        control_buttons_html = self._generate_control_buttons_html(
+            enable_export, enable_autosave
+        )
+        app_initialization = self._generate_app_initialization(
+            config, enable_autosave, enable_export, enable_url_state, app_name
+        )
 
         # Prepare CSS: either inline or CDN
         if embed_react:
@@ -102,11 +123,17 @@ class HTMLGenerator:
         .btn { display: inline-block; font-weight: 400; text-align: center; vertical-align: middle; cursor: pointer; padding: 0.375rem 0.75rem; font-size: 1rem; line-height: 1.5; border-radius: 0.25rem; border: 1px solid transparent; }
         .btn-primary { color: #fff; background-color: #0d6efd; border-color: #0d6efd; }
         .btn-primary:hover { background-color: #0b5ed7; border-color: #0a58ca; }
+        .btn-secondary { color: #fff; background-color: #6c757d; border-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5c636a; border-color: #565e64; }
+        .btn-warning { color: #000; background-color: #ffc107; border-color: #ffc107; }
+        .btn-warning:hover { background-color: #e0a800; border-color: #d39e00; }
         .alert { position: relative; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: 0.25rem; }
         .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
         .readonly-field { background-color: #f8f9fa; }
         .field-group { border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem; }
         input[type="number"], input[type="text"] { -webkit-appearance: none; }
+        .validation-error { border-color: #dc3545 !important; }
+        .validation-message { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; }
     </style>"""
         else:
             css_tag = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
@@ -129,6 +156,7 @@ class HTMLGenerator:
         <div class="mesh-form-container">
             <h1>__TITLE__</h1>
             <!-- DESCRIPTION_PLACEHOLDER -->
+            __CONTROL_BUTTONS__
             <div id="rjsf-form"></div>
         </div>
     </div>
@@ -213,6 +241,11 @@ class HTMLGenerator:
     __MESH_FUNCTIONS__
     </script>
 
+    <!-- State Management -->
+    <script>
+    __STATE_MANAGEMENT__
+    </script>
+
     <!-- Mesh Propagator -->
     <script>
     __MESH_PROPAGATOR__
@@ -251,8 +284,10 @@ class HTMLGenerator:
             .replace("__REACT_TAGS__", react_tags)
             .replace("__VENDOR_SCRIPT_TAG__", vendor_tag)
             .replace("__MESH_FUNCTIONS__", mesh_functions)
+            .replace("__STATE_MANAGEMENT__", state_management_js)
             .replace("__MESH_PROPAGATOR__", mesh_propagator)
             .replace("__APP_INITIALIZATION__", app_initialization)
+            .replace("__CONTROL_BUTTONS__", control_buttons_html)
             .replace("<!-- DESCRIPTION_PLACEHOLDER -->", description_html)
         )
 
@@ -327,7 +362,162 @@ const meshPropagator = new MeshPropagator(
         )
         return js
 
-    def _generate_app_initialization(self, config: Dict[str, Any]) -> str:
+    def _generate_state_management_js(
+        self,
+        app_name: str,
+        enable_autosave: bool,
+        enable_export: bool,
+        enable_url_state: bool,
+    ) -> str:
+        """Generate JavaScript for state management features."""
+        js_parts = []
+
+        if enable_autosave or enable_export or enable_url_state:
+            js_parts.append("""
+// State Management System
+const StateManager = {
+    storageKey: '%s_state',
+    """ % app_name)
+
+        if enable_autosave:
+            js_parts.append("""
+    // LocalStorage Auto-Save
+    saveState: function(formData) {
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify(formData));
+            console.log('State auto-saved to localStorage');
+        } catch (e) {
+            console.warn('Failed to save state:', e);
+        }
+    },
+
+    loadState: function() {
+        try {
+            const saved = localStorage.getItem(this.storageKey);
+            if (saved) {
+                console.log('State restored from localStorage');
+                return JSON.parse(saved);
+            }
+        } catch (e) {
+            console.warn('Failed to load state:', e);
+        }
+        return null;
+    },
+
+    clearState: function() {
+        try {
+            localStorage.removeItem(this.storageKey);
+            console.log('State cleared from localStorage');
+        } catch (e) {
+            console.warn('Failed to clear state:', e);
+        }
+    },
+""")
+
+        if enable_export:
+            js_parts.append("""
+    // Export/Import State
+    exportState: function(formData) {
+        const dataStr = JSON.stringify(formData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = this.storageKey + '_export_' + new Date().toISOString().split('T')[0] + '.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        console.log('State exported to file');
+    },
+
+    importState: function(callback) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    console.log('State imported from file');
+                    callback(data);
+                } catch (err) {
+                    alert('Error importing state: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    },
+""")
+
+        if enable_url_state:
+            js_parts.append("""
+    // URL Hash State Persistence
+    saveToURL: function(formData) {
+        try {
+            const compressed = btoa(JSON.stringify(formData));
+            window.location.hash = compressed;
+            console.log('State saved to URL');
+        } catch (e) {
+            console.warn('Failed to save state to URL:', e);
+        }
+    },
+
+    loadFromURL: function() {
+        try {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                const decompressed = JSON.parse(atob(hash));
+                console.log('State loaded from URL');
+                return decompressed;
+            }
+        } catch (e) {
+            console.warn('Failed to load state from URL:', e);
+        }
+        return null;
+    },
+""")
+
+        if enable_autosave or enable_export or enable_url_state:
+            js_parts.append("""
+};
+""")
+
+        return "".join(js_parts)
+
+    def _generate_control_buttons_html(
+        self, enable_export: bool, enable_autosave: bool
+    ) -> str:
+        """Generate HTML for control buttons."""
+        if not enable_export and not enable_autosave:
+            return ""
+
+        buttons = []
+
+        buttons.append('<div style="margin-bottom: 1rem; padding: 0.5rem; background-color: #f8f9fa; border-radius: 0.25rem;">')
+
+        if enable_export:
+            buttons.append(
+                '<button type="button" class="btn btn-primary" style="margin-right: 0.5rem;" onclick="if(window.currentFormData && StateManager.exportState) StateManager.exportState(window.currentFormData)">💾 Export State</button>'
+            )
+            buttons.append(
+                '<button type="button" class="btn btn-secondary" style="margin-right: 0.5rem;" onclick="if(StateManager.importState) StateManager.importState(function(data){ renderForm(data); })">📂 Import State</button>'
+            )
+
+        if enable_autosave:
+            buttons.append(
+                '<button type="button" class="btn btn-warning" onclick="if(StateManager.clearState) { StateManager.clearState(); window.location.reload(); }">🗑️ Clear Saved</button>'
+            )
+
+        buttons.append("</div>")
+
+        return "".join(buttons)
+
+    def _generate_app_initialization(self, config: Dict[str, Any], enable_autosave: bool = True, enable_export: bool = True, enable_url_state: bool = True, app_name: str = "rh_app") -> str:
         """Generate the main app initialization JavaScript."""
         rjsf_config = {
             "schema": config.get("schema", {}),
@@ -416,9 +606,15 @@ try {
                     var newFormData = meshPropagator.propagate(key, formData[key], formData);
                     if (JSON.stringify(newFormData) !== JSON.stringify(formData)) {
                         renderForm(newFormData);
+                        return;
                     }
                 }
             });
+            // Save state if enabled
+            if (typeof StateManager !== 'undefined') {
+                StateManager.saveState && StateManager.saveState(formData);
+                StateManager.saveToURL && StateManager.saveToURL(formData);
+            }
         } catch (error) {
             console.error('Error in onChange:', error);
         }
@@ -426,6 +622,7 @@ try {
 
     function renderForm(formData) {
         formData = typeof formData === 'undefined' ? formConfig.formData : formData;
+        window.currentFormData = formData;  // Track for export button
         try {
             var element = React.createElement(FormComponent, {
                 schema: formConfig.schema,
@@ -468,9 +665,23 @@ try {
         }
     }
 
+    // Load initial state (URL takes precedence over localStorage)
+    var initialData = formConfig.formData;
+    if (typeof StateManager !== 'undefined') {
+        var urlData = StateManager.loadFromURL && StateManager.loadFromURL();
+        var savedData = StateManager.loadState && StateManager.loadState();
+        if (urlData) {
+            console.log('Using state from URL');
+            initialData = urlData;
+        } else if (savedData) {
+            console.log('Using saved state from localStorage');
+            initialData = savedData;
+        }
+    }
+
     // Initial render
     console.log('Starting initial render...');
-    renderForm();
+    renderForm(initialData);
 
 } catch (error) {
     console.error('Error in app initialization:', error);

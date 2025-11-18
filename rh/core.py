@@ -157,6 +157,16 @@ class MeshBuilder:
         - hidden_*: Creates hidden input field
         - color_*: Creates color picker widget
         - date_*: Creates date input widget
+        - time_*: Creates time input widget
+        - datetime_*: Creates datetime-local input widget
+        - email_*: Creates email input field
+        - url_*: Creates URL input field
+        - tel_*: Creates telephone input field
+        - textarea_*: Creates multi-line text area
+        - password_*: Creates password input field
+        - number_*: Creates number input field
+        - checkbox_*: Creates checkbox widget
+        - range_*: Creates range slider (alias for slider_)
 
         Computed variables (those with dependencies in the mesh) are made
         readonly by default unless they have a slider_ prefix.
@@ -170,7 +180,7 @@ class MeshBuilder:
         ui_config = {}
 
         # Prefix-based conventions
-        if var_name.startswith("slider_"):
+        if var_name.startswith("slider_") or var_name.startswith("range_"):
             ui_config.update({"ui:widget": "range", "minimum": 0, "maximum": 100})
         elif var_name.startswith("readonly_"):
             ui_config["ui:readonly"] = True
@@ -180,6 +190,24 @@ class MeshBuilder:
             ui_config["ui:widget"] = "color"
         elif var_name.startswith("date_"):
             ui_config["ui:widget"] = "date"
+        elif var_name.startswith("time_"):
+            ui_config["ui:widget"] = "time"
+        elif var_name.startswith("datetime_"):
+            ui_config["ui:widget"] = "datetime-local"
+        elif var_name.startswith("email_"):
+            ui_config["ui:widget"] = "email"
+        elif var_name.startswith("url_"):
+            ui_config["ui:widget"] = "url"
+        elif var_name.startswith("tel_"):
+            ui_config["ui:widget"] = "tel"
+        elif var_name.startswith("textarea_"):
+            ui_config["ui:widget"] = "textarea"
+        elif var_name.startswith("password_"):
+            ui_config["ui:widget"] = "password"
+        elif var_name.startswith("number_"):
+            ui_config["ui:widget"] = "updown"
+        elif var_name.startswith("checkbox_"):
+            ui_config["ui:widget"] = "checkbox"
 
         # Check if this is a computed variable (has dependencies)
         if var_name in self.mesh:
@@ -257,6 +285,7 @@ class MeshBuilder:
         port: int = 8080,
         app_name: Optional[str] = None,
         embed_rjsf: bool = False,
+        embed_react: bool = False,
         meta: Optional[Dict[str, Any]] = None,
     ) -> Path:
         """Generate complete HTML app with all assets bundled.
@@ -266,6 +295,8 @@ class MeshBuilder:
             serve: Whether to start a development server
             port: Port for development server
             app_name: Name for the app (used for directory if output_dir not set)
+            embed_rjsf: Whether to embed RJSF library instead of loading from CDN
+            embed_react: Whether to embed React/ReactDOM instead of loading from CDN
 
         Returns:
             Path to the generated HTML file
@@ -286,7 +317,7 @@ class MeshBuilder:
         # Attach meta information to config for generator to render descriptions
         if meta:
             config["meta"] = meta
-        html_content = html_generator.generate_app(config, title, embed_rjsf=embed_rjsf)
+        html_content = html_generator.generate_app(config, title, embed_rjsf=embed_rjsf, embed_react=embed_react)
 
         app_file = output_path / "index.html"
         app_file.write_text(html_content)

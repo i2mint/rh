@@ -1,0 +1,52 @@
+{
+  "mesh_spec": {
+    "velocity": ["distance", "time"],
+    "acceleration": ["velocity", "time"],
+    "force": ["mass", "acceleration"],
+    "kinetic_energy": ["mass", "velocity"]
+  },
+  "functions_spec": {
+    "velocity": "return time > 0 ? distance / time : 0;",
+    "acceleration": "return time > 0 ? velocity / time : 0;",
+    "force": "return mass * acceleration;",
+    "kinetic_energy": "return 0.5 * mass * velocity * velocity;"
+  },
+  "initial_values": {
+    "distance": 100,
+    "time": 10,
+    "mass": 5
+  },
+  "field_overrides": {
+    "distance": {
+      "title": "Distance (meters)"
+    },
+    "time": {
+      "title": "Time (seconds)"
+    },
+    "mass": {
+      "title": "Mass (kg)"
+    },
+    "velocity": {
+      "title": "Velocity (m/s)"
+    },
+    "acceleration": {
+      "title": "Acceleration (m/s²)"
+    },
+    "force": {
+      "title": "Force (Newtons)"
+    },
+    "kinetic_energy": {
+      "title": "Kinetic Energy (Joules)"
+    }
+  },
+  "ui_config": {},
+  "meta": {
+    "description": "Calculate physics quantities from basic inputs",
+    "features": [
+      "Velocity calculation",
+      "Acceleration calculation",
+      "Force calculation (F = ma)",
+      "Kinetic energy calculation"
+    ]
+  }
+}

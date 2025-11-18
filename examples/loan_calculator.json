@@ -1,0 +1,57 @@
+{
+  "mesh_spec": {
+    "monthly_rate": ["slider_annual_rate"],
+    "number_of_payments": ["slider_years"],
+    "monthly_payment": ["slider_principal", "monthly_rate", "number_of_payments"],
+    "total_payment": ["monthly_payment", "number_of_payments"],
+    "total_interest": ["total_payment", "slider_principal"]
+  },
+  "functions_spec": {
+    "monthly_rate": "return slider_annual_rate / 100 / 12;",
+    "number_of_payments": "return slider_years * 12;",
+    "monthly_payment": "if (monthly_rate === 0) return slider_principal / number_of_payments; const x = Math.pow(1 + monthly_rate, number_of_payments); return (slider_principal * monthly_rate * x) / (x - 1);",
+    "total_payment": "return monthly_payment * number_of_payments;",
+    "total_interest": "return total_payment - slider_principal;"
+  },
+  "initial_values": {
+    "slider_principal": 200000,
+    "slider_annual_rate": 5.5,
+    "slider_years": 30
+  },
+  "field_overrides": {
+    "slider_principal": {
+      "title": "Loan Amount ($)",
+      "minimum": 10000,
+      "maximum": 1000000
+    },
+    "slider_annual_rate": {
+      "title": "Annual Interest Rate (%)",
+      "minimum": 0,
+      "maximum": 20
+    },
+    "slider_years": {
+      "title": "Loan Term (years)",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "monthly_payment": {
+      "title": "Monthly Payment ($)"
+    },
+    "total_payment": {
+      "title": "Total Payment ($)"
+    },
+    "total_interest": {
+      "title": "Total Interest ($)"
+    }
+  },
+  "ui_config": {},
+  "meta": {
+    "description": "Calculate loan payments and total interest",
+    "features": [
+      "Adjust loan amount, rate, and term with sliders",
+      "See monthly payment in real-time",
+      "Calculate total interest paid",
+      "Professional financial calculator"
+    ]
+  }
+}

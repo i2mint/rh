@@ -19,13 +19,28 @@ class HTMLGenerator:
         self.template_dir = Path(__file__).parent.parent / "templates"
 
     def generate_app(
-        self, config: Dict[str, Any], title: str = "Mesh App", embed_rjsf: bool = False
+        self, config: Dict[str, Any], title: str = "Mesh App", embed_rjsf: bool = False, embed_react: bool = False
     ) -> str:
         """Return a full HTML document as a string for the provided mesh config.
 
         - config: dict with keys schema, uiSchema, initial_values, mesh (dict of function deps), functions (optional)
         - embed_rjsf: if True, embed the deterministic vendor UMD found in templates/vendor/rjsf-umd.js
+        - embed_react: if True, embed React and ReactDOM from templates/vendor/ for offline use
         """
+        # Prepare React script tags: either embed from vendor or use CDN
+        if embed_react:
+            react_path = self.template_dir / "vendor" / "react.min.js"
+            react_dom_path = self.template_dir / "vendor" / "react-dom.min.js"
+            if react_path.exists() and react_dom_path.exists():
+                react_script = react_path.read_text(encoding="utf-8")
+                react_dom_script = react_dom_path.read_text(encoding="utf-8")
+                react_tags = f"<script>{react_script}</script>\n    <script>{react_dom_script}</script>"
+            else:
+                # Fallback to CDN if vendor files don't exist
+                react_tags = '<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>\n    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>'
+        else:
+            react_tags = '<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>\n    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>'
+
         # Prepare vendor script: either embed deterministic UMD or use CDN tag
         vendor_script = None
         if embed_rjsf:
@@ -35,6 +50,9 @@ class HTMLGenerator:
 
         if vendor_script:
             vendor_tag = f"<script>{vendor_script}</script>"
+        elif embed_react:
+            # If embed_react is true, skip RJSF CDN and use only the fallback form
+            vendor_tag = '<!-- RJSF skipped for offline mode, using SimpleFormComponent fallback -->'
         else:
             # Use a reasonably-versioned CDN as default
             vendor_tag = '<script src="https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js"></script>'
@@ -67,18 +85,44 @@ class HTMLGenerator:
         mesh_propagator = self._generate_mesh_propagator_js(mesh_config_js)
         app_initialization = self._generate_app_initialization(config)
 
+        # Prepare CSS: either inline or CDN
+        if embed_react:
+            # Inline minimal Bootstrap-like CSS for offline use
+            css_tag = """<style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; padding: 0; }
+        .container-fluid { width: 100%; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto; }
+        .mesh-form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; }
+        .mb-3 { margin-bottom: 1rem; }
+        .form-label { display: inline-block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-control, .form-control-plaintext { display: block; width: 100%; padding: 0.375rem 0.75rem; font-size: 1rem; line-height: 1.5; color: #212529; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-radius: 0.25rem; }
+        .form-control-plaintext { background-color: transparent; border: solid transparent; border-width: 1px 0; }
+        .form-range { width: 100%; height: 1.5rem; padding: 0; background-color: transparent; }
+        .form-text { margin-top: 0.25rem; font-size: 0.875em; color: #6c757d; }
+        .btn { display: inline-block; font-weight: 400; text-align: center; vertical-align: middle; cursor: pointer; padding: 0.375rem 0.75rem; font-size: 1rem; line-height: 1.5; border-radius: 0.25rem; border: 1px solid transparent; }
+        .btn-primary { color: #fff; background-color: #0d6efd; border-color: #0d6efd; }
+        .btn-primary:hover { background-color: #0b5ed7; border-color: #0a58ca; }
+        .alert { position: relative; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: 0.25rem; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .readonly-field { background-color: #f8f9fa; }
+        .field-group { border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem; }
+        input[type="number"], input[type="text"] { -webkit-appearance: none; }
+    </style>"""
+        else:
+            css_tag = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <style>
+        .mesh-form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; }
+        .readonly-field { background-color: #f8f9fa; }
+        .field-group { border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem; }
+    </style>"""
+
         template = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>__TITLE__</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
-    <style>
-        .mesh-form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; }
-        .readonly-field { background-color: #f8f9fa; }
-        .field-group { border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem; }
-    </style>
+    __CSS_TAG__
 </head>
 <body>
     <div class="container-fluid">
@@ -90,8 +134,7 @@ class HTMLGenerator:
     </div>
 
     <!-- React Dependencies -->
-    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    __REACT_TAGS__
 
     <!-- Simple form library fallback -->
     <script>
@@ -204,6 +247,8 @@ class HTMLGenerator:
 
         html = (
             template.replace("__TITLE__", title)
+            .replace("__CSS_TAG__", css_tag)
+            .replace("__REACT_TAGS__", react_tags)
             .replace("__VENDOR_SCRIPT_TAG__", vendor_tag)
             .replace("__MESH_FUNCTIONS__", mesh_functions)
             .replace("__MESH_PROPAGATOR__", mesh_propagator)

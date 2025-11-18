@@ -1,0 +1,23 @@
+{
+  "mesh_spec": {
+    "fahrenheit": ["celsius"],
+    "kelvin": ["celsius"]
+  },
+  "functions_spec": {
+    "fahrenheit": "return celsius * 9/5 + 32;",
+    "kelvin": "return celsius + 273.15;"
+  },
+  "initial_values": {
+    "celsius": 20.0
+  },
+  "field_overrides": {},
+  "ui_config": {},
+  "meta": {
+    "description": "Convert temperatures between Celsius, Fahrenheit, and Kelvin",
+    "features": [
+      "Real-time temperature conversion",
+      "Bidirectional updates",
+      "Clean, simple interface"
+    ]
+  }
+}

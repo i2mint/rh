@@ -2,7 +2,7 @@
 HTML Generator for creating complete web applications from mesh configurations.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, List
 from pathlib import Path
 import json
 
@@ -28,6 +28,7 @@ class HTMLGenerator:
         enable_export: bool = True,
         enable_url_state: bool = True,
         presets: Dict[str, Dict[str, Any]] = None,
+        show_mesh_graph: bool = False,
     ) -> str:
         """Return a full HTML document as a string for the provided mesh config.
 
@@ -37,6 +38,8 @@ class HTMLGenerator:
         - enable_autosave: if True, auto-save form state to localStorage
         - enable_export: if True, add export/import state buttons
         - enable_url_state: if True, persist state in URL hash
+        - presets: dict of preset configurations for quick loading
+        - show_mesh_graph: if True, include a visual mesh dependency graph
         """
         # Prepare React script tags: either embed from vendor or use CDN
         if embed_react:
@@ -101,10 +104,11 @@ class HTMLGenerator:
             app_name, enable_autosave, enable_export, enable_url_state
         )
         control_buttons_html = self._generate_control_buttons_html(
-            enable_export, enable_autosave
+            enable_export, enable_autosave, show_mesh_graph
         )
         preset_buttons_html = self._generate_preset_buttons_html(presets)
         conditional_fields_js = self._generate_conditional_fields_js(config.get("conditional_fields", {}))
+        mesh_graph_html = self._generate_mesh_graph_html(config.get("mesh", {}), config.get("initial_values", {})) if show_mesh_graph else ""
         app_initialization = self._generate_app_initialization(
             config, enable_autosave, enable_export, enable_url_state, app_name
         )
@@ -130,6 +134,9 @@ class HTMLGenerator:
         .btn-secondary:hover { background-color: #5c636a; border-color: #565e64; }
         .btn-warning { color: #000; background-color: #ffc107; border-color: #ffc107; }
         .btn-warning:hover { background-color: #e0a800; border-color: #d39e00; }
+        .btn-info { color: #fff; background-color: #0dcaf0; border-color: #0dcaf0; }
+        .btn-info:hover { background-color: #31d2f2; border-color: #25cff2; }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.875rem; }
         .alert { position: relative; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: 0.25rem; }
         .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
         .readonly-field { background-color: #f8f9fa; }
@@ -202,6 +209,7 @@ class HTMLGenerator:
             __PRESET_BUTTONS__
             __CONTROL_BUTTONS__
             <div id="rjsf-form"></div>
+            __MESH_GRAPH__
         </div>
     </div>
 
@@ -339,6 +347,7 @@ class HTMLGenerator:
             .replace("__APP_INITIALIZATION__", app_initialization)
             .replace("__CONTROL_BUTTONS__", control_buttons_html)
             .replace("__PRESET_BUTTONS__", preset_buttons_html)
+            .replace("__MESH_GRAPH__", mesh_graph_html)
             .replace("<!-- DESCRIPTION_PLACEHOLDER -->", description_html)
         )
 
@@ -541,10 +550,10 @@ const StateManager = {
         return "".join(js_parts)
 
     def _generate_control_buttons_html(
-        self, enable_export: bool, enable_autosave: bool
+        self, enable_export: bool, enable_autosave: bool, show_mesh_graph: bool = False
     ) -> str:
         """Generate HTML for control buttons."""
-        if not enable_export and not enable_autosave:
+        if not enable_export and not enable_autosave and not show_mesh_graph:
             return ""
 
         buttons = []
@@ -561,7 +570,12 @@ const StateManager = {
 
         if enable_autosave:
             buttons.append(
-                '<button type="button" class="btn btn-warning" onclick="if(StateManager.clearState) { StateManager.clearState(); window.location.reload(); }">🗑️ Clear Saved</button>'
+                '<button type="button" class="btn btn-warning" style="margin-right: 0.5rem;" onclick="if(StateManager.clearState) { StateManager.clearState(); window.location.reload(); }">🗑️ Clear Saved</button>'
+            )
+
+        if show_mesh_graph:
+            buttons.append(
+                '<button type="button" class="btn btn-info" onclick="document.getElementById(\'mesh-graph\').style.display=\'block\'">📊 Show Graph</button>'
             )
 
         buttons.append("</div>")
@@ -653,6 +667,71 @@ function applyConditionalVisibility(formData) {{
 }}
 """
         return js
+
+    def _generate_mesh_graph_html(self, mesh_spec: Dict[str, List[str]], initial_values: Dict[str, Any] = None) -> str:
+        """Generate a simple HTML-based mesh dependency visualization.
+
+        Args:
+            mesh_spec: Dictionary mapping function names to their dependencies
+            initial_values: Dictionary of initial variable values
+
+        Returns:
+            HTML string with mesh visualization
+        """
+        if not mesh_spec:
+            return ""
+
+        initial_values = initial_values or {}
+        input_vars = set(initial_values.keys()) - set(mesh_spec.keys())
+        computed_vars = set(mesh_spec.keys())
+
+        html = ['<div id="mesh-graph" style="display: none; margin-top: 1rem; padding: 1rem; background-color: #f8f9fa; border-radius: 0.5rem; border: 2px solid #dee2e6;">']
+        html.append('<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">')
+        html.append('<h3 style="margin: 0;">📊 Mesh Dependencies</h3>')
+        html.append('<button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById(\'mesh-graph\').style.display=\'none\'">Close</button>')
+        html.append('</div>')
+
+        # Input variables
+        if input_vars:
+            html.append('<div style="margin-bottom: 1.5rem;">')
+            html.append('<h4 style="color: #0d6efd; margin-bottom: 0.5rem;">📥 Input Variables</h4>')
+            html.append('<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">')
+            for var in sorted(input_vars):
+                value = initial_values.get(var, "?")
+                html.append(f'<div style="background-color: #e7f3ff; padding: 0.5rem 1rem; border-radius: 0.25rem; border: 1px solid #0d6efd;"><strong>{var}</strong> = {value}</div>')
+            html.append('</div></div>')
+
+        # Computed variables
+        if computed_vars:
+            html.append('<div style="margin-bottom: 1.5rem;">')
+            html.append('<h4 style="color: #28a745; margin-bottom: 0.5rem;">⚙️ Computed Variables</h4>')
+            html.append('<div style="display: flex; flex-direction: column; gap: 0.75rem;">')
+            for var in sorted(computed_vars):
+                deps = mesh_spec[var]
+                deps_str = " + ".join(deps) if deps else "(no dependencies)"
+                html.append(f'<div style="background-color: #d4edda; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #28a745;">')
+                html.append(f'<strong style="color: #155724;">{var}</strong>')
+                html.append(f' <span style="color: #666;">←</span> ')
+                html.append(f'<span style="font-family: monospace;">{deps_str}</span>')
+                html.append('</div>')
+            html.append('</div></div>')
+
+        # Dependency graph (simple arrows)
+        html.append('<div>')
+        html.append('<h4 style="color: #6c757d; margin-bottom: 0.5rem;">🔗 Dependency Flow</h4>')
+        html.append('<div style="font-family: monospace; font-size: 0.9rem; line-height: 1.8;">')
+
+        # Create a simple text-based flow diagram
+        for var in sorted(computed_vars):
+            deps = mesh_spec[var]
+            if deps:
+                for dep in deps:
+                    html.append(f'<div style="padding-left: 1rem;">{dep} → {var}</div>')
+
+        html.append('</div></div>')
+        html.append('</div>')
+
+        return "".join(html)
 
     def _generate_app_initialization(self, config: Dict[str, Any], enable_autosave: bool = True, enable_export: bool = True, enable_url_state: bool = True, app_name: str = "rh_app") -> str:
         """Generate the main app initialization JavaScript."""

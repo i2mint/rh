@@ -371,6 +371,7 @@ class MeshBuilder:
         enable_url_state: bool = True,
         meta: Optional[Dict[str, Any]] = None,
         presets: Optional[Dict[str, Dict[str, Any]]] = None,
+        show_mesh_graph: bool = False,
     ) -> Path:
         """Generate complete HTML app with all assets bundled.
 
@@ -386,6 +387,7 @@ class MeshBuilder:
             enable_url_state: Enable URL hash state persistence
             meta: Metadata dictionary with description and features
             presets: Dictionary of preset configurations (name -> values dict)
+            show_mesh_graph: Include visual mesh dependency graph
 
         Returns:
             Path to the generated HTML file
@@ -415,6 +417,7 @@ class MeshBuilder:
             enable_export=enable_export,
             enable_url_state=enable_url_state,
             presets=presets,
+            show_mesh_graph=show_mesh_graph,
         )
 
         app_file = output_path / "index.html"

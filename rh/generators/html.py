@@ -27,6 +27,7 @@ class HTMLGenerator:
         enable_autosave: bool = True,
         enable_export: bool = True,
         enable_url_state: bool = True,
+        presets: Dict[str, Dict[str, Any]] = None,
     ) -> str:
         """Return a full HTML document as a string for the provided mesh config.
 
@@ -102,6 +103,8 @@ class HTMLGenerator:
         control_buttons_html = self._generate_control_buttons_html(
             enable_export, enable_autosave
         )
+        preset_buttons_html = self._generate_preset_buttons_html(presets)
+        conditional_fields_js = self._generate_conditional_fields_js(config.get("conditional_fields", {}))
         app_initialization = self._generate_app_initialization(
             config, enable_autosave, enable_export, enable_url_state, app_name
         )
@@ -134,6 +137,26 @@ class HTMLGenerator:
         input[type="number"], input[type="text"] { -webkit-appearance: none; }
         .validation-error { border-color: #dc3545 !important; }
         .validation-message { color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem; }
+
+        /* Mobile-responsive enhancements */
+        @media (max-width: 768px) {
+            .mesh-form-container { padding: 1rem; margin: 1rem auto; }
+            .btn { padding: 0.5rem 1rem; font-size: 1.1rem; min-height: 44px; }
+            .form-control { padding: 0.5rem 0.75rem; font-size: 1rem; min-height: 44px; }
+            .form-range { height: 2rem; }
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            .mesh-form-container { padding: 0.75rem; margin: 0.5rem auto; }
+            .btn { display: block; width: 100%; margin-bottom: 0.5rem; }
+            body { font-size: 0.95rem; }
+        }
+        /* Touch-friendly enhancements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn { min-height: 48px; }
+            .form-control, input, select, textarea { min-height: 48px; font-size: 16px; }
+        }
     </style>"""
         else:
             css_tag = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
@@ -141,6 +164,26 @@ class HTMLGenerator:
         .mesh-form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; }
         .readonly-field { background-color: #f8f9fa; }
         .field-group { border: 1px solid #dee2e6; border-radius: 0.375rem; padding: 1rem; margin-bottom: 1rem; }
+
+        /* Mobile-responsive enhancements */
+        @media (max-width: 768px) {
+            .mesh-form-container { padding: 1rem; margin: 1rem auto; }
+            .btn { padding: 0.5rem 1rem; font-size: 1.1rem; min-height: 44px; }
+            .form-control { padding: 0.5rem 0.75rem; font-size: 1rem; min-height: 44px; }
+            .form-range { height: 2rem; }
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            .mesh-form-container { padding: 0.75rem; margin: 0.5rem auto; }
+            .btn { display: block; width: 100%; margin-bottom: 0.5rem; }
+            body { font-size: 0.95rem; }
+        }
+        /* Touch-friendly enhancements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn { min-height: 48px; }
+            .form-control, input, select, textarea { min-height: 48px; font-size: 16px; }
+        }
     </style>"""
 
         template = """<!DOCTYPE html>
@@ -156,6 +199,7 @@ class HTMLGenerator:
         <div class="mesh-form-container">
             <h1>__TITLE__</h1>
             <!-- DESCRIPTION_PLACEHOLDER -->
+            __PRESET_BUTTONS__
             __CONTROL_BUTTONS__
             <div id="rjsf-form"></div>
         </div>
@@ -246,6 +290,11 @@ class HTMLGenerator:
     __STATE_MANAGEMENT__
     </script>
 
+    <!-- Conditional Fields -->
+    <script>
+    __CONDITIONAL_FIELDS__
+    </script>
+
     <!-- Mesh Propagator -->
     <script>
     __MESH_PROPAGATOR__
@@ -285,9 +334,11 @@ class HTMLGenerator:
             .replace("__VENDOR_SCRIPT_TAG__", vendor_tag)
             .replace("__MESH_FUNCTIONS__", mesh_functions)
             .replace("__STATE_MANAGEMENT__", state_management_js)
+            .replace("__CONDITIONAL_FIELDS__", conditional_fields_js)
             .replace("__MESH_PROPAGATOR__", mesh_propagator)
             .replace("__APP_INITIALIZATION__", app_initialization)
             .replace("__CONTROL_BUTTONS__", control_buttons_html)
+            .replace("__PRESET_BUTTONS__", preset_buttons_html)
             .replace("<!-- DESCRIPTION_PLACEHOLDER -->", description_html)
         )
 
@@ -517,6 +568,92 @@ const StateManager = {
 
         return "".join(buttons)
 
+    def _generate_preset_buttons_html(self, presets: Dict[str, Dict[str, Any]] = None) -> str:
+        """Generate HTML for preset value buttons."""
+        if not presets:
+            return ""
+
+        buttons = []
+        buttons.append('<div style="margin-bottom: 1rem; padding: 0.5rem; background-color: #e7f3ff; border-radius: 0.25rem;">')
+        buttons.append('<strong style="margin-right: 0.5rem;">Presets:</strong>')
+
+        for preset_name, preset_values in presets.items():
+            # Escape preset values for onclick
+            preset_json = json.dumps(preset_values).replace('"', '&quot;')
+            buttons.append(
+                f'<button type="button" class="btn btn-primary" style="margin-right: 0.5rem; margin-bottom: 0.25rem;" onclick="if(window.renderForm) renderForm({preset_json})">{preset_name}</button>'
+            )
+
+        buttons.append("</div>")
+        return "".join(buttons)
+
+    def _generate_conditional_fields_js(self, conditional_fields: Dict[str, Dict[str, Any]]) -> str:
+        """Generate JavaScript for conditional field visibility.
+
+        conditional_fields format:
+        {
+            "field_name": {
+                "condition_field": "other_field",
+                "condition_value": value,
+                "condition_operator": "=="|"!="|">"|"<"|">="|"<="
+            }
+        }
+        """
+        if not conditional_fields:
+            return ""
+
+        conditions_json = json.dumps(conditional_fields)
+
+        js = f"""
+// Conditional fields support
+const conditionalFields = {conditions_json};
+
+function applyConditionalVisibility(formData) {{
+    if (!formData) return;
+
+    Object.keys(conditionalFields).forEach(fieldName => {{
+        const condition = conditionalFields[fieldName];
+        const conditionField = condition.condition_field;
+        const conditionValue = condition.condition_value;
+        const operator = condition.condition_operator || '==';
+
+        const currentValue = formData[conditionField];
+        let shouldShow = false;
+
+        switch(operator) {{
+            case '==':
+                shouldShow = currentValue == conditionValue;
+                break;
+            case '!=':
+                shouldShow = currentValue != conditionValue;
+                break;
+            case '>':
+                shouldShow = currentValue > conditionValue;
+                break;
+            case '<':
+                shouldShow = currentValue < conditionValue;
+                break;
+            case '>=':
+                shouldShow = currentValue >= conditionValue;
+                break;
+            case '<=':
+                shouldShow = currentValue <= conditionValue;
+                break;
+        }}
+
+        // Find and hide/show the field's container
+        const fieldElement = document.querySelector(`[id*="root_${{fieldName}}"]`);
+        if (fieldElement) {{
+            const container = fieldElement.closest('.mb-3, .field-group, .form-group');
+            if (container) {{
+                container.style.display = shouldShow ? '' : 'none';
+            }}
+        }}
+    }});
+}}
+"""
+        return js
+
     def _generate_app_initialization(self, config: Dict[str, Any], enable_autosave: bool = True, enable_export: bool = True, enable_url_state: bool = True, app_name: str = "rh_app") -> str:
         """Generate the main app initialization JavaScript."""
         rjsf_config = {
@@ -659,6 +796,10 @@ try {
             });
             ReactDOM.render(element, document.getElementById('rjsf-form'));
             console.log('Form rendered successfully');
+            // Apply conditional visibility after render
+            if (typeof applyConditionalVisibility === 'function') {
+                setTimeout(function() { applyConditionalVisibility(formData); }, 0);
+            }
         } catch (error) {
             console.error('Error rendering form:', error);
             document.getElementById('rjsf-form').innerHTML = '<div class="alert alert-danger">Error rendering form: ' + (error && error.message) + '</div>';

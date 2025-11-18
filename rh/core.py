@@ -24,6 +24,7 @@ class MeshBuilder:
     initial_values: Dict[str, Any] = field(default_factory=dict)
     field_overrides: Dict[str, Any] = field(default_factory=dict)
     ui_config: Dict[str, Any] = field(default_factory=dict)
+    conditional_fields: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     output_dir: Optional[str] = None
 
     def __post_init__(self):
@@ -73,6 +74,7 @@ class MeshBuilder:
             "propagation_rules": self._build_propagation_rules(),
             "initial_values": self.initial_values,
             "mesh": self.mesh,
+            "conditional_fields": self.conditional_fields,
         }
 
         return config
@@ -90,6 +92,9 @@ class MeshBuilder:
             if var_name in self.field_overrides:
                 schema["properties"][var_name].update(self.field_overrides[var_name])
 
+            # Add constraint descriptions if not already present
+            self._add_constraint_descriptions(var_name, schema["properties"][var_name])
+
         return schema
 
     def _infer_variable_schema(self, var_name: str) -> Dict[str, Any]:
@@ -100,7 +105,7 @@ class MeshBuilder:
         - int → integer schema
         - float → number schema
         - str → string schema
-        - list → array schema
+        - list → array schema with inferred item type
         - Default (no initial value) → number schema
 
         Args:
@@ -120,10 +125,74 @@ class MeshBuilder:
             elif isinstance(value, str):
                 return {"type": "string"}
             elif isinstance(value, list):
-                return {"type": "array"}
+                # Infer item type from first element
+                schema = {"type": "array"}
+                if len(value) > 0:
+                    first_item = value[0]
+                    if isinstance(first_item, bool):
+                        schema["items"] = {"type": "boolean"}
+                    elif isinstance(first_item, int):
+                        schema["items"] = {"type": "integer"}
+                    elif isinstance(first_item, float):
+                        schema["items"] = {"type": "number"}
+                    elif isinstance(first_item, str):
+                        schema["items"] = {"type": "string"}
+                    else:
+                        # Default to string for unknown types
+                        schema["items"] = {"type": "string"}
+                else:
+                    # Empty array - default to number items
+                    schema["items"] = {"type": "number"}
+                return schema
 
         # Default to number for computed variables
         return {"type": "number"}
+
+    def _add_constraint_descriptions(self, var_name: str, var_schema: Dict[str, Any]) -> None:
+        """Add helpful constraint descriptions to schema if not already present.
+
+        Generates descriptions like:
+        - "Value must be between 0 and 100"
+        - "Minimum value: 0"
+        - "Must match pattern: ^[A-Z]+"
+
+        Args:
+            var_name: Name of the variable
+            var_schema: The variable's JSON Schema dictionary (modified in place)
+        """
+        if "description" in var_schema:
+            # Don't override existing descriptions
+            return
+
+        constraints = []
+        var_type = var_schema.get("type", "")
+
+        if var_type in ["number", "integer"]:
+            has_min = "minimum" in var_schema
+            has_max = "maximum" in var_schema
+
+            if has_min and has_max:
+                constraints.append(f"Value must be between {var_schema['minimum']} and {var_schema['maximum']}")
+            elif has_min:
+                constraints.append(f"Minimum value: {var_schema['minimum']}")
+            elif has_max:
+                constraints.append(f"Maximum value: {var_schema['maximum']}")
+
+        if "pattern" in var_schema:
+            constraints.append(f"Must match pattern: {var_schema['pattern']}")
+
+        if "minLength" in var_schema:
+            constraints.append(f"Minimum length: {var_schema['minLength']}")
+
+        if "maxLength" in var_schema:
+            constraints.append(f"Maximum length: {var_schema['maxLength']}")
+
+        if "enum" in var_schema:
+            enum_values = ", ".join(str(v) for v in var_schema["enum"])
+            constraints.append(f"Allowed values: {enum_values}")
+
+        if constraints:
+            var_schema["description"] = "; ".join(constraints)
 
     def _generate_ui_schema(self) -> Dict[str, Any]:
         """Generate RJSF UI Schema with conventions and overrides."""
@@ -167,6 +236,8 @@ class MeshBuilder:
         - number_*: Creates number input field
         - checkbox_*: Creates checkbox widget
         - range_*: Creates range slider (alias for slider_)
+        - list_* or array_*: Array fields with add/remove buttons
+        - tags_*: Array of strings displayed as tags
 
         Computed variables (those with dependencies in the mesh) are made
         readonly by default unless they have a slider_ prefix.
@@ -208,6 +279,12 @@ class MeshBuilder:
             ui_config["ui:widget"] = "updown"
         elif var_name.startswith("checkbox_"):
             ui_config["ui:widget"] = "checkbox"
+        elif var_name.startswith("list_") or var_name.startswith("array_"):
+            # Array with add/remove buttons
+            ui_config["ui:options"] = {"addable": True, "removable": True, "orderable": True}
+        elif var_name.startswith("tags_"):
+            # Tags input for string arrays
+            ui_config["ui:options"] = {"addable": True, "removable": True}
 
         # Check if this is a computed variable (has dependencies)
         if var_name in self.mesh:
@@ -230,6 +307,9 @@ class MeshBuilder:
         variables = set(self.mesh.keys())  # Output variables
         for args in self.mesh.values():
             variables.update(args)  # Input variables
+        # Also include variables from initial_values and field_overrides
+        variables.update(self.initial_values.keys())
+        variables.update(self.field_overrides.keys())
         return variables
 
     def _resolve_functions(self) -> str:
@@ -290,6 +370,7 @@ class MeshBuilder:
         enable_export: bool = True,
         enable_url_state: bool = True,
         meta: Optional[Dict[str, Any]] = None,
+        presets: Optional[Dict[str, Dict[str, Any]]] = None,
     ) -> Path:
         """Generate complete HTML app with all assets bundled.
 
@@ -303,6 +384,8 @@ class MeshBuilder:
             enable_autosave: Enable automatic state saving to localStorage
             enable_export: Enable export/import state buttons
             enable_url_state: Enable URL hash state persistence
+            meta: Metadata dictionary with description and features
+            presets: Dictionary of preset configurations (name -> values dict)
 
         Returns:
             Path to the generated HTML file
@@ -331,6 +414,7 @@ class MeshBuilder:
             enable_autosave=enable_autosave,
             enable_export=enable_export,
             enable_url_state=enable_url_state,
+            presets=presets,
         )
 
         app_file = output_path / "index.html"

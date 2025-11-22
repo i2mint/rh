@@ -19,7 +19,7 @@ class HTMLGenerator:
         self.template_dir = Path(__file__).parent.parent / "templates"
 
     def generate_app(
-        self, config: Dict[str, Any], title: str = "Mesh App", embed_rjsf: bool = False
+        self, config: dict[str, Any], title: str = "Mesh App", embed_rjsf: bool = False
     ) -> str:
         """Return a full HTML document as a string for the provided mesh config.
 
@@ -282,7 +282,7 @@ const meshPropagator = new MeshPropagator(
         )
         return js
 
-    def _generate_app_initialization(self, config: Dict[str, Any]) -> str:
+    def _generate_app_initialization(self, config: dict[str, Any]) -> str:
         """Generate the main app initialization JavaScript."""
         rjsf_config = {
             "schema": config.get("schema", {}),

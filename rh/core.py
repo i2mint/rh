@@ -19,18 +19,18 @@ class MeshBuilder:
     enabling bidirectional dependencies and real-time updates in web interfaces.
     """
 
-    mesh_spec: Dict[str, Any]
-    functions_spec: Dict[str, Any]
-    initial_values: Dict[str, Any] = field(default_factory=dict)
-    field_overrides: Dict[str, Any] = field(default_factory=dict)
-    ui_config: Dict[str, Any] = field(default_factory=dict)
-    output_dir: Optional[str] = None
+    mesh_spec: dict[str, Any]
+    functions_spec: dict[str, Any]
+    initial_values: dict[str, Any] = field(default_factory=dict)
+    field_overrides: dict[str, Any] = field(default_factory=dict)
+    ui_config: dict[str, Any] = field(default_factory=dict)
+    output_dir: str | None = None
 
     def __post_init__(self):
         """Initialize the mesh after construction."""
         self.mesh = self._parse_mesh(self.mesh_spec)
 
-    def _get_output_dir(self, app_name: Optional[str] = None) -> str:
+    def _get_output_dir(self, app_name: str | None = None) -> str:
         """Get the output directory for the app.
 
         Args:
@@ -51,7 +51,7 @@ class MeshBuilder:
             else:
                 return os.path.join(RH_APP_FOLDER, "default_app")
 
-    def _parse_mesh(self, mesh_spec: Dict[str, Any]) -> Dict[str, Any]:
+    def _parse_mesh(self, mesh_spec: dict[str, Any]) -> dict[str, Any]:
         """Parse mesh specification from various formats.
 
         Currently supports direct dict format.
@@ -61,7 +61,7 @@ class MeshBuilder:
         else:
             raise ValueError(f"Unsupported mesh_spec type: {type(mesh_spec)}")
 
-    def generate_config(self) -> Dict[str, Any]:
+    def generate_config(self) -> dict[str, Any]:
         """Generate explicit configuration from inputs and conventions.
 
         This is the key method - everything downstream uses only this config.
@@ -77,7 +77,7 @@ class MeshBuilder:
 
         return config
 
-    def _generate_json_schema(self) -> Dict[str, Any]:
+    def _generate_json_schema(self) -> dict[str, Any]:
         """Generate JSON Schema from mesh and initial values."""
         all_variables = self._get_all_variables()
         schema = {"type": "object", "properties": {}, "required": []}
@@ -92,7 +92,7 @@ class MeshBuilder:
 
         return schema
 
-    def _infer_variable_schema(self, var_name: str) -> Dict[str, Any]:
+    def _infer_variable_schema(self, var_name: str) -> dict[str, Any]:
         """Infer JSON Schema for a variable based on initial values.
 
         Type inference rules:
@@ -125,7 +125,7 @@ class MeshBuilder:
         # Default to number for computed variables
         return {"type": "number"}
 
-    def _generate_ui_schema(self) -> Dict[str, Any]:
+    def _generate_ui_schema(self) -> dict[str, Any]:
         """Generate RJSF UI Schema with conventions and overrides."""
         ui_schema = {}
         all_variables = self._get_all_variables()
@@ -148,7 +148,7 @@ class MeshBuilder:
 
         return ui_schema
 
-    def _apply_ui_conventions(self, var_name: str) -> Dict[str, Any]:
+    def _apply_ui_conventions(self, var_name: str) -> dict[str, Any]:
         """Apply naming conventions to determine UI widgets.
 
         Supported conventions:
@@ -219,11 +219,11 @@ class MeshBuilder:
 
         return f"const meshFunctions = {{{','.join(js_functions)}}};"
 
-    def _build_propagation_rules(self) -> Dict[str, Any]:
+    def _build_propagation_rules(self) -> dict[str, Any]:
         """Build propagation rules for the mesh."""
         return {"reverseMesh": self._build_reverse_mesh(), "mesh": self.mesh}
 
-    def _build_reverse_mesh(self) -> Dict[str, list]:
+    def _build_reverse_mesh(self) -> dict[str, list]:
         """Build reverse mapping from arguments to functions."""
         reverse = {}
         for func_name, arg_names in self.mesh.items():
@@ -233,7 +233,7 @@ class MeshBuilder:
                 reverse[arg_name].append(func_name)
         return reverse
 
-    def build_components_from_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    def build_components_from_config(self, config: dict[str, Any]) -> dict[str, Any]:
         """Generate RJSF components from explicit config.
 
         Args:
@@ -255,9 +255,9 @@ class MeshBuilder:
         title: str = "Mesh App",
         serve: bool = False,
         port: int = 8080,
-        app_name: Optional[str] = None,
+        app_name: str | None = None,
         embed_rjsf: bool = False,
-        meta: Optional[Dict[str, Any]] = None,
+        meta: dict[str, Any] | None = None,
     ) -> Path:
         """Generate complete HTML app with all assets bundled.
 
@@ -296,7 +296,7 @@ class MeshBuilder:
 
         return app_file
 
-    def serve(self, directory: Optional[str] = None, port: int = 8080):
+    def serve(self, directory: str | None = None, port: int = 8080):
         """Serve the app locally for development.
 
         Args:

@@ -8,7 +8,10 @@ import tempfile
 import os
 from pathlib import Path
 from rh import MeshBuilder
-from playwright.sync_api import sync_playwright
+import pytest
+
+sync_api = pytest.importorskip("playwright.sync_api")  # browser test: needs playwright
+sync_playwright = sync_api.sync_playwright
 
 
 def test_runtime_form_renders_without_react_errors():

@@ -36,9 +36,9 @@ def test_fixed_app():
         html_content = app_path.read_text()
 
         # Assert the validator reference was fixed (expected pattern)
-        assert (
-            "JSONSchemaForm.validator.ajv8" in html_content
-        ), "Validator reference not found; expected JSONSchemaForm.validator.ajv8"
+        assert "JSONSchemaForm.validator.ajv8" in html_content, (
+            "Validator reference not found; expected JSONSchemaForm.validator.ajv8"
+        )
 
         # Look for other potential issues
         print("\n🔍 JavaScript Analysis:")

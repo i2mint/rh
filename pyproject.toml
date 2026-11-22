@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rh"
-version = "0.0.12"
+version = "0.0.13"
 description = "Reactive Html Framework - Transform variable relationships into interactive web apps"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -54,9 +54,9 @@ def test_serve_before_build_app():
         processed_serve_dir = process_path(serve_dir, ensure_dir_exists=True)
         print(f"✅ Serve directory ready: {processed_serve_dir}")
 
-        assert os.path.exists(
-            processed_serve_dir
-        ), f"Serve directory should exist: {processed_serve_dir}"
+        assert os.path.exists(processed_serve_dir), (
+            f"Serve directory should exist: {processed_serve_dir}"
+        )
 
         print("✅ serve() before build_app() scenario works!")
 

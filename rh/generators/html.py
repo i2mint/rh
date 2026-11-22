@@ -431,8 +431,6 @@ try {
     console.error('Error in app initialization:', error);
     document.getElementById('rjsf-form').innerHTML = '<div class="alert alert-danger">App initialization failed: ' + (error && error.message) + '</div>';
 }
-""" % (
-            rjsf_json
-        )
+""" % (rjsf_json)
 
         return js

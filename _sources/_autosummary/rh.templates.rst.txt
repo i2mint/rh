@@ -1,0 +1,6 @@
+rh.templates
+============
+
+.. automodule:: rh.templates
+
+   

@@ -1,4 +1,0 @@
-rh.tests.test_serve_before_build
-================================
-.. automodule:: rh.tests.test_serve_before_build
-   :members:

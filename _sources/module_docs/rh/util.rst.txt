@@ -1,4 +1,0 @@
-rh.util
-=======
-.. automodule:: rh.util
-   :members:

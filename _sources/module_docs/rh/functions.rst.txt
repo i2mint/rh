@@ -1,4 +1,0 @@
-rh.functions
-============
-.. automodule:: rh.functions
-   :members:

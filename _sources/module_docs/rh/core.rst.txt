@@ -1,4 +1,0 @@
-rh.core
-=======
-.. automodule:: rh.core
-   :members:

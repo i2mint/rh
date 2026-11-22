@@ -1,0 +1,12 @@
+rh.core
+=======
+
+.. automodule:: rh.core
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      MeshBuilder
+   

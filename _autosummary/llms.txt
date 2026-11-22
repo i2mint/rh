@@ -1,0 +1,19 @@
+# rh
+
+> Reactive Html Framework - Transform variable relationships into interactive web apps
+
+
+## Pages in this subsection
+
+- [rh](rh.html.md): RH (Reactive Html Framework) - Transform variable relationships into interactive web apps.
+- [rh.core](rh.core.html.md): Core RH (Reactive Html Framework) module.
+- [rh.functions](rh.functions.html.md): Functions module for JavaScript function resolution
+- [rh.generators](rh.generators.html.md): Empty module init
+- [rh.generators.html](rh.generators.html.html.md): HTML Generator for creating complete web applications from mesh configurations.
+- [rh.spec](rh.spec.html.md): Spec module for parsing different mesh formats
+- [rh.templates](rh.templates.html.md): Templates directory marker
+- [rh.util](rh.util.html.md): Utility functions for the RH framework.
+
+## Optional
+
+- [Top-level llms.txt](../llms.txt): Complete documentation index.

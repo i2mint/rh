@@ -1,4 +1,0 @@
-rh.tests
-========
-.. automodule:: rh.tests
-   :members:

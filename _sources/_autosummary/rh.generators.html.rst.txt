@@ -1,0 +1,12 @@
+rh.generators.html
+==================
+
+.. automodule:: rh.generators.html
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      HTMLGenerator
+   

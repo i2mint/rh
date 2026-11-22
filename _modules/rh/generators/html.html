@@ -1,99 +1,256 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+<link rel="alternate" type="text/markdown" href="html.html.md">
+<link rel="describedby" href="../../../llms.txt" type="text/markdown"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+
+    <!-- Generated with Sphinx 9.1.1 and Furo 2025.12.19 -->
+        <title>rh.generators.html - rh</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_autodoc_typehints.css?v=057ac668" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
 
 
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rh.generators.html &mdash; rh 0.0.11 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
-
+<style>
+  body {
+    --color-code-background: #f0f0f0;
+  --color-code-foreground: black;
+  --color-brand-primary: #893365;
+  --color-brand-content: #893365;
   
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=0c446633"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
-      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
-</head>
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #f494c6;
+  --color-brand-content: #f494c6;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #f494c6;
+  --color-brand-content: #f494c6;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
 
-          
-          
-          <a href="../../../index.html" class="icon icon-home">
-            rh
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh.html">rh</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/core.html">rh.core</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/functions.html">rh.functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/generators.html">rh.generators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/generators/html.html">rh.generators.html</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/spec.html">rh.spec</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/templates.html">rh.templates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests.html">rh.tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_advanced_rh.html">rh.tests.test_advanced_rh</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_app_building.html">rh.tests.test_app_building</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_app_directory.html">rh.tests.test_app_directory</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_basic_rh.html">rh.tests.test_basic_rh</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_demo_scenario.html">rh.tests.test_demo_scenario</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_integration.html">rh.tests.test_integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_readme_examples.html">rh.tests.test_readme_examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_runtime_smoke.html">rh.tests.test_runtime_smoke</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/tests/test_serve_before_build.html">rh.tests.test_serve_before_build</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/rh/util.html">rh.util</a></li>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">rh</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <span class="sidebar-brand-text">rh</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api.html">API reference</a><input aria-label="Toggle navigation of API reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../_autosummary/rh.html">rh</a><input aria-label="Toggle navigation of rh" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rh.core.html">rh.core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rh.functions.html">rh.functions</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../_autosummary/rh.generators.html">rh.generators</a><input aria-label="Toggle navigation of rh.generators" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../_autosummary/rh.generators.html.html">rh.generators.html</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rh.spec.html">rh.spec</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rh.templates.html">rh.templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rh.util.html">rh.util</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">rh</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">rh.generators.html</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <h1>Source code for rh.generators.html</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for rh.generators.html</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""</span>
 <span class="sd">HTML Generator for creating complete web applications from mesh configurations.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -101,76 +258,76 @@
 
 
 <div class="viewcode-block" id="HTMLGenerator">
-<a class="viewcode-back" href="../../../module_docs/rh/generators/html.html#rh.generators.html.HTMLGenerator">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/rh.generators.html.html#rh.generators.html.HTMLGenerator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HTMLGenerator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates complete HTML applications from mesh configurations.</span>
+<span class="w">    </span><span class="sd">"""Generates complete HTML applications from mesh configurations.</span>
 
 <span class="sd">    The generator builds a self-contained index.html that includes React, a</span>
 <span class="sd">    lightweight fallback form component, optional embedded vendor UMD for</span>
 <span class="sd">    RJSF (when embed_rjsf=True), and the mesh propagation runtime.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">template_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;templates&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">"templates"</span>
 
 <div class="viewcode-block" id="HTMLGenerator.generate_app">
-<a class="viewcode-back" href="../../../module_docs/rh/generators/html.html#rh.generators.html.HTMLGenerator.generate_app">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/rh.generators.html.html#rh.generators.html.HTMLGenerator.generate_app">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_app</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Mesh App&quot;</span><span class="p">,</span> <span class="n">embed_rjsf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Mesh App"</span><span class="p">,</span> <span class="n">embed_rjsf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a full HTML document as a string for the provided mesh config.</span>
+<span class="w">        </span><span class="sd">"""Return a full HTML document as a string for the provided mesh config.</span>
 
 <span class="sd">        - config: dict with keys schema, uiSchema, initial_values, mesh (dict of function deps), functions (optional)</span>
 <span class="sd">        - embed_rjsf: if True, embed the deterministic vendor UMD found in templates/vendor/rjsf-umd.js</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Prepare vendor script: either embed deterministic UMD or use CDN tag</span>
         <span class="n">vendor_script</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">embed_rjsf</span><span class="p">:</span>
-            <span class="n">vendor_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_dir</span> <span class="o">/</span> <span class="s2">&quot;vendor&quot;</span> <span class="o">/</span> <span class="s2">&quot;rjsf-umd.js&quot;</span>
+            <span class="n">vendor_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_dir</span> <span class="o">/</span> <span class="s2">"vendor"</span> <span class="o">/</span> <span class="s2">"rjsf-umd.js"</span>
             <span class="k">if</span> <span class="n">vendor_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="n">vendor_script</span> <span class="o">=</span> <span class="n">vendor_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                <span class="n">vendor_script</span> <span class="o">=</span> <span class="n">vendor_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">vendor_script</span><span class="p">:</span>
-            <span class="n">vendor_tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;script&gt;</span><span class="si">{</span><span class="n">vendor_script</span><span class="si">}</span><span class="s2">&lt;/script&gt;&quot;</span>
+            <span class="n">vendor_tag</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"&lt;script&gt;</span><span class="si">{</span><span class="n">vendor_script</span><span class="si">}</span><span class="s2">&lt;/script&gt;"</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Use a reasonably-versioned CDN as default</span>
-            <span class="n">vendor_tag</span> <span class="o">=</span> <span class="s1">&#39;&lt;script src=&quot;https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js&quot;&gt;&lt;/script&gt;&#39;</span>
+            <span class="n">vendor_tag</span> <span class="o">=</span> <span class="s1">'&lt;script src="https://unpkg.com/react-jsonschema-form@1.8.1/dist/react-jsonschema-form.js"&gt;&lt;/script&gt;'</span>
 
         <span class="c1"># Build mesh functions JS. The MeshBuilder._resolve_functions currently</span>
-        <span class="c1"># returns a JS string like &#39;const meshFunctions = {...};&#39; — preserve that</span>
+        <span class="c1"># returns a JS string like 'const meshFunctions = {...};' — preserve that</span>
         <span class="c1"># if present. If config provides a dict, JSON-encode it.</span>
-        <span class="n">mesh_functions_val</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;functions&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span>
+        <span class="n">mesh_functions_val</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"functions"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">mesh_functions_val</span><span class="p">,</span> <span class="nb">str</span>
-        <span class="p">)</span> <span class="ow">and</span> <span class="n">mesh_functions_val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">):</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="n">mesh_functions_val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"const"</span><span class="p">):</span>
             <span class="n">mesh_functions</span> <span class="o">=</span> <span class="n">mesh_functions_val</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mesh_functions_val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># string but not a JS bundle - treat as inline JS body</span>
-            <span class="n">mesh_functions</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;const meshFunctions = </span><span class="se">{{</span><span class="si">{</span><span class="n">mesh_functions_val</span><span class="si">}</span><span class="se">}}</span><span class="s2">;&quot;</span>
+            <span class="n">mesh_functions</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"const meshFunctions = </span><span class="se">{{</span><span class="si">{</span><span class="n">mesh_functions_val</span><span class="si">}</span><span class="se">}}</span><span class="s2">;"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">mesh_functions</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;const meshFunctions = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">mesh_functions_val</span><span class="p">)</span><span class="si">}</span><span class="s2">;&quot;</span>
+            <span class="n">mesh_functions</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"const meshFunctions = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">mesh_functions_val</span><span class="p">)</span><span class="si">}</span><span class="s2">;"</span>
 
         <span class="c1"># Build mesh config JS (mesh + reverseMesh)</span>
-        <span class="n">mesh</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mesh&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mesh"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="c1"># Compute reverseMesh in Python to embed into the page</span>
         <span class="n">reverse</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">mesh</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
                 <span class="n">reverse</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func_name</span><span class="p">)</span>
 
-        <span class="n">mesh_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mesh&quot;</span><span class="p">:</span> <span class="n">mesh</span><span class="p">,</span> <span class="s2">&quot;reverseMesh&quot;</span><span class="p">:</span> <span class="n">reverse</span><span class="p">}</span>
-        <span class="n">mesh_config_js</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;const meshConfig = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">mesh_config</span><span class="p">)</span><span class="si">}</span><span class="s2">;&quot;</span>
+        <span class="n">mesh_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"mesh"</span><span class="p">:</span> <span class="n">mesh</span><span class="p">,</span> <span class="s2">"reverseMesh"</span><span class="p">:</span> <span class="n">reverse</span><span class="p">}</span>
+        <span class="n">mesh_config_js</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"const meshConfig = </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">mesh_config</span><span class="p">)</span><span class="si">}</span><span class="s2">;"</span>
 
         <span class="n">mesh_propagator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_mesh_propagator_js</span><span class="p">(</span><span class="n">mesh_config_js</span><span class="p">)</span>
         <span class="n">app_initialization</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_app_initialization</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
-        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
-<span class="s2">&lt;html lang=&quot;en&quot;&gt;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">"""&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html lang="en"&gt;</span>
 <span class="s2">&lt;head&gt;</span>
-<span class="s2">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span>
-<span class="s2">    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span>
+<span class="s2">    &lt;meta charset="UTF-8"&gt;</span>
+<span class="s2">    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span>
 <span class="s2">    &lt;title&gt;__TITLE__&lt;/title&gt;</span>
-<span class="s2">    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css&quot;&gt;</span>
+<span class="s2">    &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css"&gt;</span>
 <span class="s2">    &lt;style&gt;</span>
 <span class="s2">        .mesh-form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; }</span>
 <span class="s2">        .readonly-field { background-color: #f8f9fa; }</span>
@@ -178,17 +335,17 @@
 <span class="s2">    &lt;/style&gt;</span>
 <span class="s2">&lt;/head&gt;</span>
 <span class="s2">&lt;body&gt;</span>
-<span class="s2">    &lt;div class=&quot;container-fluid&quot;&gt;</span>
-<span class="s2">        &lt;div class=&quot;mesh-form-container&quot;&gt;</span>
+<span class="s2">    &lt;div class="container-fluid"&gt;</span>
+<span class="s2">        &lt;div class="mesh-form-container"&gt;</span>
 <span class="s2">            &lt;h1&gt;__TITLE__&lt;/h1&gt;</span>
 <span class="s2">            &lt;!-- DESCRIPTION_PLACEHOLDER --&gt;</span>
-<span class="s2">            &lt;div id=&quot;rjsf-form&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">            &lt;div id="rjsf-form"&gt;&lt;/div&gt;</span>
 <span class="s2">        &lt;/div&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
 
 <span class="s2">    &lt;!-- React Dependencies --&gt;</span>
-<span class="s2">    &lt;script crossorigin src=&quot;https://unpkg.com/react@17/umd/react.production.min.js&quot;&gt;&lt;/script&gt;</span>
-<span class="s2">    &lt;script crossorigin src=&quot;https://unpkg.com/react-dom@17/umd/react-dom.production.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s2">    &lt;script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"&gt;&lt;/script&gt;</span>
+<span class="s2">    &lt;script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</span>
 
 <span class="s2">    &lt;!-- Simple form library fallback --&gt;</span>
 <span class="s2">    &lt;script&gt;</span>
@@ -201,44 +358,44 @@
 <span class="s2">        const uiSchema = props.uiSchema || </span><span class="si">{}</span><span class="s2">;</span>
 
 <span class="s2">        function createField(key, fieldSchema, value) {</span>
-<span class="s2">            const fieldProps = { id: key, name: key, value: value === undefined ? &#39;&#39; : value, onChange: function(e) {</span>
+<span class="s2">            const fieldProps = { id: key, name: key, value: value === undefined ? '' : value, onChange: function(e) {</span>
 <span class="s2">                const newData = Object.assign(</span><span class="si">{}</span><span class="s2">, formData);</span>
-<span class="s2">                const newValue = fieldSchema &amp;&amp; fieldSchema.type === &#39;number&#39; ? parseFloat(e.target.value) || 0 : e.target.value;</span>
+<span class="s2">                const newValue = fieldSchema &amp;&amp; fieldSchema.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;</span>
 <span class="s2">                newData[key] = newValue;</span>
 <span class="s2">                if (onChange) onChange({formData: newData});</span>
 <span class="s2">            }};</span>
 
 <span class="s2">            const uiOptions = uiSchema[key] || </span><span class="si">{}</span><span class="s2">;</span>
-<span class="s2">            const isReadonly = uiOptions[&#39;ui:readonly&#39;];</span>
-<span class="s2">            const widget = uiOptions[&#39;ui:widget&#39;];</span>
-<span class="s2">            const help = uiOptions[&#39;ui:help&#39;];</span>
+<span class="s2">            const isReadonly = uiOptions['ui:readonly'];</span>
+<span class="s2">            const widget = uiOptions['ui:widget'];</span>
+<span class="s2">            const help = uiOptions['ui:help'];</span>
 
 <span class="s2">            if (isReadonly) {</span>
 <span class="s2">                fieldProps.readOnly = true;</span>
-<span class="s2">                fieldProps.className = &#39;form-control-plaintext&#39;;</span>
+<span class="s2">                fieldProps.className = 'form-control-plaintext';</span>
 <span class="s2">            } else {</span>
-<span class="s2">                fieldProps.className = &#39;form-control&#39;;</span>
+<span class="s2">                fieldProps.className = 'form-control';</span>
 <span class="s2">            }</span>
 
 <span class="s2">            let input;</span>
-<span class="s2">            if (widget === &#39;range&#39;) {</span>
-<span class="s2">                input = React.createElement(&#39;input&#39;, Object.assign(</span><span class="si">{}</span><span class="s2">, fieldProps, { type: &#39;range&#39;, min: uiOptions.minimum || 0, max: uiOptions.maximum || 100, className: &#39;form-range&#39; }));</span>
-<span class="s2">            } else if (fieldSchema &amp;&amp; fieldSchema.type === &#39;number&#39;) {</span>
-<span class="s2">                fieldProps.type = &#39;number&#39;; fieldProps.step = &#39;any&#39;; input = React.createElement(&#39;input&#39;, fieldProps);</span>
+<span class="s2">            if (widget === 'range') {</span>
+<span class="s2">                input = React.createElement('input', Object.assign(</span><span class="si">{}</span><span class="s2">, fieldProps, { type: 'range', min: uiOptions.minimum || 0, max: uiOptions.maximum || 100, className: 'form-range' }));</span>
+<span class="s2">            } else if (fieldSchema &amp;&amp; fieldSchema.type === 'number') {</span>
+<span class="s2">                fieldProps.type = 'number'; fieldProps.step = 'any'; input = React.createElement('input', fieldProps);</span>
 <span class="s2">            } else {</span>
-<span class="s2">                fieldProps.type = &#39;text&#39;; input = React.createElement(&#39;input&#39;, fieldProps);</span>
+<span class="s2">                fieldProps.type = 'text'; input = React.createElement('input', fieldProps);</span>
 <span class="s2">            }</span>
 
-<span class="s2">            const label = React.createElement(&#39;label&#39;, { className: &#39;form-label&#39;, htmlFor: key }, (fieldSchema &amp;&amp; fieldSchema.title) || key);</span>
-<span class="s2">            const helpText = help ? React.createElement(&#39;div&#39;, { className: &#39;form-text&#39; }, help) : null;</span>
-<span class="s2">            return React.createElement(&#39;div&#39;, { className: &#39;mb-3&#39;, key: key }, label, input, helpText);</span>
+<span class="s2">            const label = React.createElement('label', { className: 'form-label', htmlFor: key }, (fieldSchema &amp;&amp; fieldSchema.title) || key);</span>
+<span class="s2">            const helpText = help ? React.createElement('div', { className: 'form-text' }, help) : null;</span>
+<span class="s2">            return React.createElement('div', { className: 'mb-3', key: key }, label, input, helpText);</span>
 <span class="s2">        }</span>
 
 <span class="s2">        const properties = (schema &amp;&amp; schema.properties) || </span><span class="si">{}</span><span class="s2">;</span>
 <span class="s2">        const fields = Object.keys(properties).map(function(key) { return createField(key, properties[key], formData[key]); });</span>
 
 <span class="s2">        // Submit button</span>
-<span class="s2">        const submitButton = React.createElement(&#39;button&#39;, { type: &#39;submit&#39;, className: &#39;btn btn-primary&#39; }, &#39;Submit&#39;);</span>
+<span class="s2">        const submitButton = React.createElement('button', { type: 'submit', className: 'btn btn-primary' }, 'Submit');</span>
 
 <span class="s2">        // onSubmit handler to invoke provided onSubmit prop and prevent full page reload</span>
 <span class="s2">        function handleSubmit(e) {</span>
@@ -246,7 +403,7 @@
 <span class="s2">            if (onSubmit) onSubmit({ formData: formData });</span>
 <span class="s2">        }</span>
 
-<span class="s2">        return React.createElement(&#39;form&#39;, { className: &#39;simple-form&#39;, onSubmit: handleSubmit }, fields.concat([submitButton]));</span>
+<span class="s2">        return React.createElement('form', { className: 'simple-form', onSubmit: handleSubmit }, fields.concat([submitButton]));</span>
 <span class="s2">    };</span>
 <span class="s2">    &lt;/script&gt;</span>
 
@@ -256,7 +413,7 @@
 <span class="s2">    &lt;!-- Provide harmless literal tokens expected by older debug/tests --&gt;</span>
 <span class="s2">    &lt;script&gt;</span>
 <span class="s2">    try {</span>
-<span class="s2">        if (typeof JSONSchemaForm !== &#39;undefined&#39; &amp;&amp; JSONSchemaForm.default) {</span>
+<span class="s2">        if (typeof JSONSchemaForm !== 'undefined' &amp;&amp; JSONSchemaForm.default) {</span>
 <span class="s2">            const Form = JSONSchemaForm.default;</span>
 <span class="s2">        }</span>
 <span class="s2">    } catch (e) </span><span class="si">{}</span>
@@ -283,38 +440,38 @@
 <span class="s2">    &lt;/script&gt;</span>
 <span class="s2">&lt;/body&gt;</span>
 <span class="s2">&lt;/html&gt;</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
         <span class="c1"># Add a demo description area populated from config.meta if available</span>
-        <span class="n">demo_meta</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
-        <span class="n">description_html</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">demo_meta</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"meta"</span><span class="p">,</span> <span class="p">{})</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="n">description_html</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">if</span> <span class="n">demo_meta</span><span class="p">:</span>
-            <span class="n">desc</span> <span class="o">=</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;summary&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
-            <span class="n">features</span> <span class="o">=</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;features&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"description"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"summary"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">demo_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"features"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
-                <span class="n">description_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;p&gt;</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">&lt;/p&gt;&quot;</span>
+                <span class="n">description_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"&lt;p&gt;</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">&lt;/p&gt;"</span>
             <span class="k">if</span> <span class="n">features</span><span class="p">:</span>
-                <span class="n">description_html</span> <span class="o">+=</span> <span class="s2">&quot;&lt;ul&gt;&quot;</span>
+                <span class="n">description_html</span> <span class="o">+=</span> <span class="s2">"&lt;ul&gt;"</span>
                 <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
-                    <span class="n">description_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;li&gt;</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&lt;/li&gt;&quot;</span>
-                <span class="n">description_html</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/ul&gt;&quot;</span>
+                    <span class="n">description_html</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"&lt;li&gt;</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&lt;/li&gt;"</span>
+                <span class="n">description_html</span> <span class="o">+=</span> <span class="s2">"&lt;/ul&gt;"</span>
 
         <span class="n">html</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__TITLE__&quot;</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__VENDOR_SCRIPT_TAG__&quot;</span><span class="p">,</span> <span class="n">vendor_tag</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__MESH_FUNCTIONS__&quot;</span><span class="p">,</span> <span class="n">mesh_functions</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__MESH_PROPAGATOR__&quot;</span><span class="p">,</span> <span class="n">mesh_propagator</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;__APP_INITIALIZATION__&quot;</span><span class="p">,</span> <span class="n">app_initialization</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;!-- DESCRIPTION_PLACEHOLDER --&gt;&quot;</span><span class="p">,</span> <span class="n">description_html</span><span class="p">)</span>
+            <span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"__TITLE__"</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"__VENDOR_SCRIPT_TAG__"</span><span class="p">,</span> <span class="n">vendor_tag</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"__MESH_FUNCTIONS__"</span><span class="p">,</span> <span class="n">mesh_functions</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"__MESH_PROPAGATOR__"</span><span class="p">,</span> <span class="n">mesh_propagator</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"__APP_INITIALIZATION__"</span><span class="p">,</span> <span class="n">app_initialization</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"&lt;!-- DESCRIPTION_PLACEHOLDER --&gt;"</span><span class="p">,</span> <span class="n">description_html</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">html</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_mesh_propagator_js</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh_config_js</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the mesh propagator JavaScript class.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate the mesh propagator JavaScript class."""</span>
         <span class="n">js</span> <span class="o">=</span> <span class="p">(</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;class MeshPropagator {</span>
+<span class="w">            </span><span class="sd">"""class MeshPropagator {</span>
 <span class="sd">    constructor(mesh, functions, reverseMesh) {</span>
 <span class="sd">        this.mesh = mesh;</span>
 <span class="sd">        this.functions = functions;</span>
@@ -337,7 +494,7 @@
 <span class="sd">                try {</span>
 <span class="sd">                    const args = this.mesh[funcName] || [];</span>
 <span class="sd">                    const argValues = args.map(arg =&gt; newFormData[arg]);</span>
-<span class="sd">                    const fn = (this.functions &amp;&amp; typeof this.functions[funcName] === &#39;function&#39;) ? this.functions[funcName] : undefined;</span>
+<span class="sd">                    const fn = (this.functions &amp;&amp; typeof this.functions[funcName] === 'function') ? this.functions[funcName] : undefined;</span>
 <span class="sd">                    if (!fn) continue;</span>
 <span class="sd">                    const result = fn(...argValues);</span>
 <span class="sd">                    if (result === undefined) continue;</span>
@@ -348,7 +505,7 @@
 <span class="sd">                        anyChange = true;</span>
 <span class="sd">                    }</span>
 <span class="sd">                } catch (err) {</span>
-<span class="sd">                    console.error(&#39;Error computing &#39; + funcName + &#39;:&#39;, err);</span>
+<span class="sd">                    console.error('Error computing ' + funcName + ':', err);</span>
 <span class="sd">                }</span>
 <span class="sd">            }</span>
 <span class="sd">            if (!anyChange) break;</span>
@@ -369,41 +526,41 @@
 <span class="sd">}</span>
 
 <span class="sd">// Initialize mesh propagator with configuration</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
             <span class="o">+</span> <span class="n">mesh_config_js</span>
-            <span class="o">+</span> <span class="s2">&quot;&quot;&quot;</span>
+            <span class="o">+</span> <span class="s2">"""</span>
 <span class="s2">const meshPropagator = new MeshPropagator(</span>
 <span class="s2">    meshConfig.mesh,</span>
 <span class="s2">    meshFunctions,</span>
 <span class="s2">    meshConfig.reverseMesh</span>
-<span class="s2">);&quot;&quot;&quot;</span>
+<span class="s2">);"""</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">js</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_app_initialization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the main app initialization JavaScript.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate the main app initialization JavaScript."""</span>
         <span class="n">rjsf_config</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="s2">&quot;uiSchema&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uiSchema&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="s2">&quot;formData&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;initial_values&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="s2">"schema"</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"schema"</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="s2">"uiSchema"</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"uiSchema"</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="s2">"formData"</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"initial_values"</span><span class="p">,</span> <span class="p">{}),</span>
         <span class="p">}</span>
 
         <span class="n">rjsf_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">rjsf_config</span><span class="p">)</span>
 
         <span class="c1"># Build a JS string by concatenation to avoid f-string brace issues</span>
-        <span class="n">js</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;// Initialize form with fallback support</span>
-<span class="s2">console.log(&#39;Starting app initialization...&#39;);</span>
+        <span class="n">js</span> <span class="o">=</span> <span class="s2">"""// Initialize form with fallback support</span>
+<span class="s2">console.log('Starting app initialization...');</span>
 
-<span class="s2">if (typeof React === &#39;undefined&#39;) {</span>
-<span class="s2">    console.error(&#39;React is not loaded&#39;);</span>
-<span class="s2">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;React library failed to load&lt;/div&gt;&#39;;</span>
-<span class="s2">    throw new Error(&#39;React is not loaded&#39;);</span>
+<span class="s2">if (typeof React === 'undefined') {</span>
+<span class="s2">    console.error('React is not loaded');</span>
+<span class="s2">    document.getElementById('rjsf-form').innerHTML = '&lt;div class="alert alert-danger"&gt;React library failed to load&lt;/div&gt;';</span>
+<span class="s2">    throw new Error('React is not loaded');</span>
 <span class="s2">}</span>
 
-<span class="s2">if (typeof ReactDOM === &#39;undefined&#39;) {</span>
-<span class="s2">    console.error(&#39;ReactDOM is not loaded&#39;);</span>
-<span class="s2">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;ReactDOM library failed to load&lt;/div&gt;&#39;;</span>
-<span class="s2">    throw new Error(&#39;ReactDOM is not loaded&#39;);</span>
+<span class="s2">if (typeof ReactDOM === 'undefined') {</span>
+<span class="s2">    console.error('ReactDOM is not loaded');</span>
+<span class="s2">    document.getElementById('rjsf-form').innerHTML = '&lt;div class="alert alert-danger"&gt;ReactDOM library failed to load&lt;/div&gt;';</span>
+<span class="s2">    throw new Error('ReactDOM is not loaded');</span>
 <span class="s2">}</span>
 
 <span class="s2">// Determine which form component to use and normalize UMD shapes</span>
@@ -412,52 +569,52 @@
 
 <span class="s2">function pickFormComponent(candidate) {</span>
 <span class="s2">    if (!candidate) return null;</span>
-<span class="s2">    if (typeof candidate === &#39;function&#39;) return candidate;</span>
-<span class="s2">    if (candidate &amp;&amp; typeof candidate.default === &#39;function&#39;) return candidate.default;</span>
-<span class="s2">    if (candidate &amp;&amp; candidate.Form &amp;&amp; typeof candidate.Form === &#39;function&#39;) return candidate.Form;</span>
-<span class="s2">    if (candidate &amp;&amp; candidate.default &amp;&amp; candidate.default.Form &amp;&amp; typeof candidate.default.Form === &#39;function&#39;) return candidate.default.Form;</span>
+<span class="s2">    if (typeof candidate === 'function') return candidate;</span>
+<span class="s2">    if (candidate &amp;&amp; typeof candidate.default === 'function') return candidate.default;</span>
+<span class="s2">    if (candidate &amp;&amp; candidate.Form &amp;&amp; typeof candidate.Form === 'function') return candidate.Form;</span>
+<span class="s2">    if (candidate &amp;&amp; candidate.default &amp;&amp; candidate.default.Form &amp;&amp; typeof candidate.default.Form === 'function') return candidate.default.Form;</span>
 <span class="s2">    return null;</span>
 <span class="s2">}</span>
 
 <span class="s2">try {</span>
-<span class="s2">    if (typeof JSONSchemaForm !== &#39;undefined&#39;) {</span>
+<span class="s2">    if (typeof JSONSchemaForm !== 'undefined') {</span>
 <span class="s2">        FormComponent = pickFormComponent(JSONSchemaForm);</span>
-<span class="s2">        if (!FormComponent) console.warn(&#39;JSONSchemaForm found but no callable component detected; keys:&#39;, Object.keys(JSONSchemaForm));</span>
+<span class="s2">        if (!FormComponent) console.warn('JSONSchemaForm found but no callable component detected; keys:', Object.keys(JSONSchemaForm));</span>
 <span class="s2">    }</span>
 
-<span class="s2">    if (!FormComponent &amp;&amp; typeof window.RJSFCore !== &#39;undefined&#39;) {</span>
+<span class="s2">    if (!FormComponent &amp;&amp; typeof window.RJSFCore !== 'undefined') {</span>
 <span class="s2">        FormComponent = pickFormComponent(window.RJSFCore);</span>
 <span class="s2">    }</span>
 
-<span class="s2">    if (!FormComponent &amp;&amp; typeof window.RJSF !== &#39;undefined&#39;) {</span>
+<span class="s2">    if (!FormComponent &amp;&amp; typeof window.RJSF !== 'undefined') {</span>
 <span class="s2">        FormComponent = pickFormComponent(window.RJSF);</span>
 <span class="s2">    }</span>
 
 <span class="s2">    if (!FormComponent) {</span>
-<span class="s2">        console.warn(&#39;No RJSF component resolved, using fallback component&#39;);</span>
+<span class="s2">        console.warn('No RJSF component resolved, using fallback component');</span>
 <span class="s2">        FormComponent = window.SimpleFormComponent;</span>
 <span class="s2">        useSimpleFallback = true;</span>
 <span class="s2">    }</span>
 
-<span class="s2">    if (typeof FormComponent === &#39;object&#39; &amp;&amp; typeof FormComponent !== &#39;function&#39;) {</span>
+<span class="s2">    if (typeof FormComponent === 'object' &amp;&amp; typeof FormComponent !== 'function') {</span>
 <span class="s2">        var candidate = FormComponent;</span>
 <span class="s2">        var inner = null;</span>
-<span class="s2">        if (typeof candidate === &#39;function&#39;) inner = candidate;</span>
-<span class="s2">        else if (typeof candidate.default === &#39;function&#39;) inner = candidate.default;</span>
-<span class="s2">        else if (candidate.Form &amp;&amp; typeof candidate.Form === &#39;function&#39;) inner = candidate.Form;</span>
-<span class="s2">        else if (candidate.default &amp;&amp; candidate.default.Form &amp;&amp; typeof candidate.default.Form === &#39;function&#39;) inner = candidate.default.Form;</span>
+<span class="s2">        if (typeof candidate === 'function') inner = candidate;</span>
+<span class="s2">        else if (typeof candidate.default === 'function') inner = candidate.default;</span>
+<span class="s2">        else if (candidate.Form &amp;&amp; typeof candidate.Form === 'function') inner = candidate.Form;</span>
+<span class="s2">        else if (candidate.default &amp;&amp; candidate.default.Form &amp;&amp; typeof candidate.default.Form === 'function') inner = candidate.default.Form;</span>
 
 <span class="s2">        if (inner) {</span>
 <span class="s2">            FormComponent = function(props) { return inner(props); };</span>
-<span class="s2">            console.log(&#39;Wrapped FormComponent created from inner function&#39;);</span>
+<span class="s2">            console.log('Wrapped FormComponent created from inner function');</span>
 <span class="s2">        } else {</span>
-<span class="s2">            console.warn(&#39;Could not find inner component function in FormComponent bundle; falling back to SimpleFormComponent&#39;);</span>
+<span class="s2">            console.warn('Could not find inner component function in FormComponent bundle; falling back to SimpleFormComponent');</span>
 <span class="s2">            FormComponent = window.SimpleFormComponent;</span>
 <span class="s2">            useSimpleFallback = true;</span>
 <span class="s2">        }</span>
 <span class="s2">    }</span>
 
-<span class="s2">    console.log(&#39;Form component type:&#39;, typeof FormComponent);</span>
+<span class="s2">    console.log('Form component type:', typeof FormComponent);</span>
 
 <span class="s2">    const formConfig = </span><span class="si">%s</span><span class="s2">;</span>
 
@@ -473,12 +630,12 @@
 <span class="s2">                }</span>
 <span class="s2">            });</span>
 <span class="s2">        } catch (error) {</span>
-<span class="s2">            console.error(&#39;Error in onChange:&#39;, error);</span>
+<span class="s2">            console.error('Error in onChange:', error);</span>
 <span class="s2">        }</span>
 <span class="s2">    };</span>
 
 <span class="s2">    function renderForm(formData) {</span>
-<span class="s2">        formData = typeof formData === &#39;undefined&#39; ? formConfig.formData : formData;</span>
+<span class="s2">        formData = typeof formData === 'undefined' ? formConfig.formData : formData;</span>
 <span class="s2">        try {</span>
 <span class="s2">            var element = React.createElement(FormComponent, {</span>
 <span class="s2">                schema: formConfig.schema,</span>
@@ -491,77 +648,441 @@
 <span class="s2">                        // Try to POST to a server endpoint if provided (optional)</span>
 <span class="s2">                        if (window.__rh_save_endpoint__) {</span>
 <span class="s2">                            try {</span>
-<span class="s2">                                fetch(window.__rh_save_endpoint__, { method: &#39;POST&#39;, headers: { &#39;Content-Type&#39;: &#39;application/json&#39; }, body: JSON.stringify(payload) })</span>
-<span class="s2">                                  .then(function(resp){ console.log(&#39;Saved to endpoint&#39;, resp &amp;&amp; resp.status); })</span>
-<span class="s2">                                  .catch(function(err){ console.warn(&#39;Endpoint save failed&#39;, err); });</span>
+<span class="s2">                                fetch(window.__rh_save_endpoint__, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })</span>
+<span class="s2">                                  .then(function(resp){ console.log('Saved to endpoint', resp &amp;&amp; resp.status); })</span>
+<span class="s2">                                  .catch(function(err){ console.warn('Endpoint save failed', err); });</span>
 <span class="s2">                            } catch (err) {</span>
-<span class="s2">                                console.warn(&#39;Endpoint save attempt failed&#39;, err);</span>
+<span class="s2">                                console.warn('Endpoint save attempt failed', err);</span>
 <span class="s2">                            }</span>
 <span class="s2">                        }</span>
 
 <span class="s2">                        // Always offer a client-side download for portability</span>
-<span class="s2">                        var dataStr = &#39;data:text/json;charset=utf-8,&#39; + encodeURIComponent(JSON.stringify(payload, null, 2));</span>
-<span class="s2">                        var dlAnchor = document.createElement(&#39;a&#39;);</span>
-<span class="s2">                        dlAnchor.setAttribute(&#39;href&#39;, dataStr);</span>
-<span class="s2">                        dlAnchor.setAttribute(&#39;download&#39;, &#39;rh_submission_&#39; + Date.now() + &#39;.json&#39;);</span>
+<span class="s2">                        var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));</span>
+<span class="s2">                        var dlAnchor = document.createElement('a');</span>
+<span class="s2">                        dlAnchor.setAttribute('href', dataStr);</span>
+<span class="s2">                        dlAnchor.setAttribute('download', 'rh_submission_' + Date.now() + '.json');</span>
 <span class="s2">                        document.body.appendChild(dlAnchor);</span>
 <span class="s2">                        dlAnchor.click();</span>
 <span class="s2">                        dlAnchor.remove();</span>
-<span class="s2">                        console.log(&#39;Data submitted and downloaded:&#39;, payload);</span>
+<span class="s2">                        console.log('Data submitted and downloaded:', payload);</span>
 <span class="s2">                    } catch (err) {</span>
-<span class="s2">                        console.error(&#39;Error in onSubmit handler:&#39;, err);</span>
+<span class="s2">                        console.error('Error in onSubmit handler:', err);</span>
 <span class="s2">                    }</span>
 <span class="s2">                }</span>
 <span class="s2">            });</span>
-<span class="s2">            ReactDOM.render(element, document.getElementById(&#39;rjsf-form&#39;));</span>
-<span class="s2">            console.log(&#39;Form rendered successfully&#39;);</span>
+<span class="s2">            ReactDOM.render(element, document.getElementById('rjsf-form'));</span>
+<span class="s2">            console.log('Form rendered successfully');</span>
 <span class="s2">        } catch (error) {</span>
-<span class="s2">            console.error(&#39;Error rendering form:&#39;, error);</span>
-<span class="s2">            document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;Error rendering form: &#39; + (error &amp;&amp; error.message) + &#39;&lt;/div&gt;&#39;;</span>
+<span class="s2">            console.error('Error rendering form:', error);</span>
+<span class="s2">            document.getElementById('rjsf-form').innerHTML = '&lt;div class="alert alert-danger"&gt;Error rendering form: ' + (error &amp;&amp; error.message) + '&lt;/div&gt;';</span>
 <span class="s2">        }</span>
 <span class="s2">    }</span>
 
 <span class="s2">    // Initial render</span>
-<span class="s2">    console.log(&#39;Starting initial render...&#39;);</span>
+<span class="s2">    console.log('Starting initial render...');</span>
 <span class="s2">    renderForm();</span>
 
 <span class="s2">} catch (error) {</span>
-<span class="s2">    console.error(&#39;Error in app initialization:&#39;, error);</span>
-<span class="s2">    document.getElementById(&#39;rjsf-form&#39;).innerHTML = &#39;&lt;div class=&quot;alert alert-danger&quot;&gt;App initialization failed: &#39; + (error &amp;&amp; error.message) + &#39;&lt;/div&gt;&#39;;</span>
+<span class="s2">    console.error('Error in app initialization:', error);</span>
+<span class="s2">    document.getElementById('rjsf-form').innerHTML = '&lt;div class="alert alert-danger"&gt;App initialization failed: ' + (error &amp;&amp; error.message) + '&lt;/div&gt;';</span>
 <span class="s2">}</span>
-<span class="s2">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+<span class="s2">"""</span> <span class="o">%</span> <span class="p">(</span>
             <span class="n">rjsf_json</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">js</span></div>
 
 </pre></div>
-
-           </div>
-          </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright NO COPYRIGHT.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+        </article>
       </div>
-    </section>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            Made with 
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
   </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+</div><script src="../../../_static/documentation_options.js?v=c249dd19"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
 
-</body>
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    </body>
 </html>

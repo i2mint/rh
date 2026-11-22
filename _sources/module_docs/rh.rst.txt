@@ -1,4 +1,0 @@
-rh
-==
-.. automodule:: rh
-   :members:

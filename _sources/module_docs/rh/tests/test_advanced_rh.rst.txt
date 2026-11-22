@@ -1,4 +1,0 @@
-rh.tests.test_advanced_rh
-=========================
-.. automodule:: rh.tests.test_advanced_rh
-   :members:

@@ -1,4 +1,0 @@
-rh.tests.test_app_building
-==========================
-.. automodule:: rh.tests.test_app_building
-   :members:

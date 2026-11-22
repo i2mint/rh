@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "built_at": "2026-11-22T20:09:34Z",
+  "package": {
+    "name": "rh",
+    "version": "0.0.12",
+    "display_name": "rh",
+    "source": "pyproject.toml"
+  },
+  "git": {
+    "available": true,
+    "commit": "258f9acab39ee0a1e25b94fdf6e5100d382feba9",
+    "short_commit": "258f9ac",
+    "branch": "master",
+    "tags": [],
+    "dirty": false,
+    "remote_url": "https://github.com/i2mint/rh",
+    "commit_url": "https://github.com/i2mint/rh/commit/258f9acab39ee0a1e25b94fdf6e5100d382feba9",
+    "error": null
+  },
+  "ci": {
+    "provider": "github",
+    "repository": "i2mint/rh",
+    "sha": "258f9acab39ee0a1e25b94fdf6e5100d382feba9",
+    "sha_in_history": true,
+    "ref": "refs/heads/master",
+    "ref_name": "master",
+    "run_id": "45064707461",
+    "run_url": "https://github.com/i2mint/rh/actions/runs/45064707461",
+    "server_url": "https://github.com"
+  },
+  "tools": {
+    "epythet": "0.2.23",
+    "sphinx": "9.1.1",
+    "docutils": "0.22.4",
+    "python": "3.12.16"
+  },
+  "config": {
+    "theme": "auto",
+    "html_theme": "furo",
+    "accent": "#893365",
+    "mode": "auto",
+    "api_generator": "autosummary",
+    "ignore": [
+      "tests/",
+      "scrap/",
+      "examples/"
+    ],
+    "agent_outputs": true,
+    "aggregates": [
+      "md"
+    ],
+    "ai_artifacts": true,
+    "provenance": true,
+    "docs_dir": "docsrc"
+  },
+  "site": {
+    "modules_documented": 8,
+    "objects_documented": 17
+  },
+  "pypi": {
+    "checked": true,
+    "latest": "0.0.13",
+    "relation": "behind",
+    "error": null
+  },
+  "reproduce": "git clone https://github.com/i2mint/rh && cd rh\ngit checkout 258f9acab39ee0a1e25b94fdf6e5100d382feba9\npip install \"epythet==0.2.23\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
+  "warnings": [],
+  "alignment": {
+    "aligned": false,
+    "notes": [
+      "The documented version (0.0.12) is behind the latest release on PyPI (0.0.13): `pip install rh` gives newer code than these docs describe."
+    ]
+  }
+}

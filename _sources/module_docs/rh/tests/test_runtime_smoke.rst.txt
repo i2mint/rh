@@ -1,4 +1,0 @@
-rh.tests.test_runtime_smoke
-===========================
-.. automodule:: rh.tests.test_runtime_smoke
-   :members:

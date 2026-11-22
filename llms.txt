@@ -1,0 +1,26 @@
+# rh
+
+> Reactive Html Framework - Transform variable relationships into interactive web apps
+
+
+## Pages
+
+- [RH - Reactive Html Framework](index.html.md): Transform variable relationships into interactive web applications with real-time updates.
+- [API reference](api.html.md): | &#96;rh&#96;   | RH (Reactive Html Framework) - Transform variable relationships into interactive web apps...
+- [rh](_autosummary/rh.html.md): RH (Reactive Html Framework) - Transform variable relationships into interactive web apps.
+- [rh.core](_autosummary/rh.core.html.md): Core RH (Reactive Html Framework) module.
+- [rh.functions](_autosummary/rh.functions.html.md): Functions module for JavaScript function resolution
+- [rh.generators](_autosummary/rh.generators.html.md): Empty module init
+- [rh.generators.html](_autosummary/rh.generators.html.html.md): HTML Generator for creating complete web applications from mesh configurations.
+- [rh.spec](_autosummary/rh.spec.html.md): Spec module for parsing different mesh formats
+- [rh.templates](_autosummary/rh.templates.html.md): Templates directory marker
+- [rh.util](_autosummary/rh.util.html.md): Utility functions for the RH framework.
+- [About this build](about-this-build.html.md): This documentation was built on &#42;&#42;2026-11-22 20:09 UTC&#42;&#42; from commit &lt;a href="https://github.com/i2m...
+
+## Optional
+
+- [rh.md](rh.md): Complete documentation in a single file.
+
+## Build
+
+- [build_info.json](build_info.json): build provenance (commit, version, tool versions, whether the docs match the package)

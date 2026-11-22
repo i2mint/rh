@@ -1,0 +1,13 @@
+rh.generators
+=============
+
+.. automodule:: rh.generators
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   html

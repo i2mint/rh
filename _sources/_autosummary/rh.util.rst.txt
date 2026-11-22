@@ -1,0 +1,19 @@
+rh.util
+=======
+
+.. automodule:: rh.util
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_app_directory
+      serve_directory
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PluginRegistry
+   
